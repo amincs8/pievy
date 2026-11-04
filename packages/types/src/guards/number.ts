@@ -5,3 +5,7 @@ export function isNumber(value: unknown): value is number {
 export function isZero(value: unknown): value is number {
   return isNumber(value) && Number.isFinite(value) && value === 0;
 }
+
+export function isPositive(value: unknown): value is number {
+  return isNumber(value) && Number.isFinite(value) && value > 0;
+}

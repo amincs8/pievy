@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isNumber, isZero } from "./number";
+import { isNumber, isPositive, isZero } from "./number";
 
 describe("@pievy/types: guards/isNumber", () => {
   it("should return true for zero", () => {
@@ -51,5 +51,20 @@ describe("@pievy/types: guards/isZero", () => {
   });
   it("should return false for Infinity", () => {
     expect(isZero(Infinity)).toBe(false);
+  });
+});
+
+describe("@pievy/types: guards/isPositive", () => {
+  it("should return true for num > 0", () => {
+    expect(isPositive(Math.random())).toBe(true);
+  });
+  it("should return false for zero", () => {
+    expect(isPositive(0.0)).toBe(false);
+  });
+  it("should return false for num < 0", () => {
+    expect(isPositive(-Math.random())).toBe(false);
+  });
+  it("should return false for Infinity", () => {
+    expect(isPositive(Infinity)).toBe(false);
   });
 });
