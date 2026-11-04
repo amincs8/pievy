@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isNumber } from "./number";
+import { isNumber, isZero } from "./number";
 
 describe("@pievy/types: guards/isNumber", () => {
   it("should return true for zero", () => {
@@ -39,5 +39,17 @@ describe("@pievy/types: guards/isNumber", () => {
   });
   it("should return false for an object", () => {
     expect(isNumber({})).toBe(false);
+  });
+});
+
+describe("@pievy/types: guards/isZero", () => {
+  it("should return true for zero", () => {
+    expect(isZero(0.0)).toBe(true);
+  });
+  it("should return false for non-zero", () => {
+    expect(isZero(1.0)).toBe(false);
+  });
+  it("should return false for Infinity", () => {
+    expect(isZero(Infinity)).toBe(false);
   });
 });
