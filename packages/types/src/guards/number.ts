@@ -2,7 +2,7 @@ export function isNumber(value: unknown): value is number {
   return typeof value === "number";
 }
 
-export function isZero(value: unknown): value is number {
+export function isZero(value: unknown): value is 0 {
   return isNumber(value) && Number.isFinite(value) && value === 0;
 }
 
