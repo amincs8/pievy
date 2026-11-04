@@ -3,3 +3,4 @@ export * from "./null";
 export * from "./nil";
 export * from "./string";
 export * from "./number";
+export * from "./bigint";
