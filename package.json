@@ -13,6 +13,7 @@
     "access": "public"
   },
   "scripts": {
+    "build": "turbo run build",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "lint": "oxlint",
@@ -33,6 +34,8 @@
     "oxlint": "^1.91.0",
     "turbo": "^2.11.10",
     "typescript": "6.0.3",
+    "vite": "^8.3.5",
+    "vite-plugin-dts": "^5.1.2",
     "vitest": "^5.1.0"
   },
   "devEngines": {
