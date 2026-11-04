@@ -168,13 +168,16 @@ importers:
     devDependencies:
       '@commitlint/cli':
         specifier: ^21.2.4
-        version: 21.2.4(conventional-commits-parser@7.1.4)
+        version: 21.2.4(conventional-commits-parser@7.1.4)(typescript@6.0.3)
       '@commitlint/config-conventional':
         specifier: ^21.2.4
         version: 21.2.4
       '@commitlint/prompt-cli':
         specifier: ^21.2.4
-        version: 21.2.4
+        version: 21.2.4(@types/node@26.6.6)(typescript@6.0.3)
+      '@types/node':
+        specifier: ^26.6.6
+        version: 26.6.6
       husky:
         specifier: ^9.1.7
         version: 9.1.7
@@ -184,6 +187,9 @@ importers:
       oxlint:
         specifier: ^1.91.0
         version: 1.91.0
+      typescript:
+        specifier: 6.0.3
+        version: 6.0.3
 
 packages:
 
@@ -554,6 +560,9 @@ packages:
     resolution: {integrity: sha512-fCTuZK4QBa+39Oz9l4OGfJfz+GpwCp3AqO7Zch3to99xHPgstVsRFpeQ8LNd2o1Gv8raL2mCFwiaHh7bFSp5DQ==}
     engines: {node: '>=22'}
 
+  '@types/node@26.6.6':
+    resolution: {integrity: sha512-MzQj+8Kx3XI40OmUAE6Qoh58ZMNstNNMwn2nfd3qWsfe7nDNSqJNzes4njhz6AHwrSHOffSLwXU6yb474Q4aog==}
+
   ajv@8.20.0:
     resolution: {integrity: sha512-Thbli+OlOj+iMPYFBVBfJ3OmCAnaSyNn4M1vz9T6Gka5Jt9ba/HIR56joy65tY6kx/FCF5VXNB819Y7/GUrBGA==}
 
@@ -907,6 +916,14 @@ packages:
     resolution: {integrity: sha512-t0rzBq87m3fVcduHDUFhKmyyX+9eo6WQjZvf51Ea/M0Q7+T374Jp1aUiyUl0GKxp8M/OETVHSDvmkyPgvX+X2w==}
     engines: {node: '>=10'}
 
+  typescript@6.0.3:
+    resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
+  undici-types@8.9.0:
+    resolution: {integrity: sha512-KTDyRTYX8sWmKXAikPHHSyc63CRPETMctyjKFupcC6OBLXT3xsN0e9aF7m+mIXutFWpUXuedtowG7iLOzp0kQg==}
+
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
@@ -951,12 +968,12 @@ snapshots:
 
   '@babel/helper-validator-identifier@7.29.7': {}
 
-  '@commitlint/cli@21.2.4(conventional-commits-parser@7.1.4)':
+  '@commitlint/cli@21.2.4(conventional-commits-parser@7.1.4)(typescript@6.0.3)':
     dependencies:
       '@commitlint/config-conventional': 21.2.4
       '@commitlint/format': 21.2.3
       '@commitlint/lint': 21.2.4
-      '@commitlint/load': 21.2.4
+      '@commitlint/load': 21.2.4(typescript@6.0.3)
       '@commitlint/read': 21.2.3(conventional-commits-parser@7.1.4)
       '@commitlint/types': 21.2.3
       tinyexec: 1.3.1
@@ -1000,13 +1017,13 @@ snapshots:
       '@commitlint/rules': 21.2.4
       '@commitlint/types': 21.2.3
 
-  '@commitlint/load@21.2.4':
+  '@commitlint/load@21.2.4(typescript@6.0.3)':
     dependencies:
       '@commitlint/config-validator': 21.2.3
       '@commitlint/execute-rule': 21.0.1
       '@commitlint/resolve-extends': 21.2.3
       '@commitlint/types': 21.2.3
-      cosmiconfig: 9.0.2
+      cosmiconfig: 9.0.2(typescript@6.0.3)
       es-toolkit: 1.53.1
       is-plain-obj: 4.1.0
       jiti: 2.7.0
@@ -1022,21 +1039,21 @@ snapshots:
       conventional-changelog-angular: 9.4.0
       conventional-commits-parser: 7.1.4
 
-  '@commitlint/prompt-cli@21.2.4':
+  '@commitlint/prompt-cli@21.2.4(@types/node@26.6.6)(typescript@6.0.3)':
     dependencies:
-      '@commitlint/prompt': 21.2.4
-      inquirer: 9.3.8
+      '@commitlint/prompt': 21.2.4(@types/node@26.6.6)(typescript@6.0.3)
+      inquirer: 9.3.8(@types/node@26.6.6)
       tinyexec: 1.3.1
     transitivePeerDependencies:
       - '@types/node'
       - typescript
 
-  '@commitlint/prompt@21.2.4':
+  '@commitlint/prompt@21.2.4(@types/node@26.6.6)(typescript@6.0.3)':
     dependencies:
       '@commitlint/ensure': 21.2.4
-      '@commitlint/load': 21.2.4
+      '@commitlint/load': 21.2.4(typescript@6.0.3)
       '@commitlint/types': 21.2.3
-      inquirer: 9.3.8
+      inquirer: 9.3.8(@types/node@26.6.6)
       picocolors: 1.1.1
     transitivePeerDependencies:
       - '@types/node'
@@ -1088,10 +1105,12 @@ snapshots:
 
   '@conventional-changelog/template@1.4.1': {}
 
-  '@inquirer/external-editor@1.0.3':
+  '@inquirer/external-editor@1.0.3(@types/node@26.6.6)':
     dependencies:
       chardet: 2.2.0
       iconv-lite: 0.7.3
+    optionalDependencies:
+      '@types/node': 26.6.6
 
   '@inquirer/figures@1.0.15': {}
 
@@ -1215,6 +1234,10 @@ snapshots:
 
   '@simple-libs/stream-utils@2.0.0': {}
 
+  '@types/node@26.6.6':
+    dependencies:
+      undici-types: 8.9.0
+
   ajv@8.20.0:
     dependencies:
       fast-deep-equal: 3.1.3
@@ -1297,12 +1320,14 @@ snapshots:
       '@simple-libs/stream-utils': 2.0.0
       argue-cli: 3.2.0
 
-  cosmiconfig@9.0.2:
+  cosmiconfig@9.0.2(typescript@6.0.3):
     dependencies:
       env-paths: 2.2.1
       import-fresh: 3.3.1
       js-yaml: 4.3.2
       parse-json: 5.2.0
+    optionalDependencies:
+      typescript: 6.0.3
 
   defaults@1.0.4:
     dependencies:
@@ -1353,9 +1378,9 @@ snapshots:
 
   ini@6.0.0: {}
 
-  inquirer@9.3.8:
+  inquirer@9.3.8(@types/node@26.6.6):
     dependencies:
-      '@inquirer/external-editor': 1.0.3
+      '@inquirer/external-editor': 1.0.3(@types/node@26.6.6)
       '@inquirer/figures': 1.0.15
       ansi-escapes: 4.3.2
       cli-width: 4.1.0
@@ -1549,6 +1574,10 @@ snapshots:
   tslib@2.9.1: {}
 
   type-fest@0.21.3: {}
+
+  typescript@6.0.3: {}
+
+  undici-types@8.9.0: {}
 
   util-deprecate@1.0.2: {}
 
