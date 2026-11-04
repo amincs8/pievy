@@ -2,7 +2,9 @@
   "name": "pievy",
   "description": "",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "prepare": "husky"
+  },
   "keywords": [],
   "license": "MIT",
   "author": {
@@ -20,5 +22,11 @@
     "access": "public"
   },
   "packageManager": "pnpm@12.16.1",
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "@commitlint/prompt-cli": "^21.2.4",
+    "husky": "^9.1.7"
+  }
 }
