@@ -1,0 +1,38 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["eslint", "typescript", "unicorn", "oxc", "import", "vitest"],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "sort-keys": "error",
+    "prefer-const": "error",
+    "no-use-before-define": "error",
+    "no-constructor-return": "error",
+    "no-duplicate-imports": "error",
+    "no-eval": "error",
+    "no-shadow": "error",
+    "no-useless-rename": "error",
+    "typescript/no-explicit-any": "warn",
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_",
+        "destructuredArrayIgnorePattern": "^_"
+      }
+    ],
+    "typescript/consistent-type-imports": [
+      "error",
+      {
+        "fixStyle": "inline-type-imports",
+        "prefer": "type-imports"
+      }
+    ],
+    "import/consistent-type-specifier-style": ["error", "prefer-top-level-if-only-type-imports"]
+  },
+  "env": {
+    "builtin": true
+  }
+}
