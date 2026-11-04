@@ -1,8 +1,18 @@
 {
   "name": "pievy",
   "private": true,
-  "description": "",
-  "keywords": [],
+  "description": "An open-source ecosystem of lightweight, modular JavaScript utilities.",
+  "keywords": [
+    "javascript",
+    "libraries",
+    "modular",
+    "open-source",
+    "pievy",
+    "toolkit",
+    "typescript",
+    "utilities",
+    "utility"
+  ],
   "license": "MIT",
   "author": {
     "name": "Amin Arabi",

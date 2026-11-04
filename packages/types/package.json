@@ -1,0 +1,29 @@
+{
+  "name": "types",
+  "description": "",
+  "keywords": [],
+  "license": "MIT",
+  "author": {
+    "name": "Amin Arabi",
+    "email": "amincs@outlook.com"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {},
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.16.1",
+      "onFail": "download"
+    }
+  },
+  "packageManager": "pnpm@12.16.1"
+}
