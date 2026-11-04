@@ -17,18 +17,23 @@
     "fmt:check": "oxfmt --check",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test": "turbo run test",
+    "test:coverage": "turbo run test -- --coverage",
+    "test:ui": "turbo run test -- --ui"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
     "@commitlint/prompt-cli": "^21.2.4",
     "@types/node": "^26.6.6",
+    "@vitest/ui": "^5.1.0",
     "husky": "^9.1.7",
     "oxfmt": "^0.76.0",
     "oxlint": "^1.91.0",
     "turbo": "^2.11.10",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "vitest": "^5.1.0"
   },
   "devEngines": {
     "packageManager": {
