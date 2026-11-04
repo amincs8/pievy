@@ -1,0 +1,24 @@
+{
+  "name": "pievy",
+  "description": "",
+  "private": true,
+  "scripts": {},
+  "keywords": [],
+  "license": "MIT",
+  "author": {
+    "name": "Amin Arabi",
+    "email": "amincs@outlook.com"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.16.1",
+      "onFail": "download"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "packageManager": "pnpm@12.16.1",
+  "type": "module"
+}
