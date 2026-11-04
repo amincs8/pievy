@@ -14,6 +14,10 @@
   },
   "scripts": {
     "build": "turbo run build",
+    "changeset": "changeset",
+    "changeset:release": "changeset publish",
+    "changeset:status": "changeset status",
+    "changeset:version": "changeset version",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "lint": "oxlint",
@@ -24,6 +28,7 @@
     "test:ui": "turbo run test -- --ui"
   },
   "devDependencies": {
+    "@changesets/cli": "^3.0.3",
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
     "@commitlint/prompt-cli": "^21.2.4",
