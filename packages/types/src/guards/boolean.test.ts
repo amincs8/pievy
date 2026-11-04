@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isBoolean, isTrue } from "./boolean";
+import { isBoolean, isFalse, isTrue } from "./boolean";
 
 describe("@pievy/types: guards/isBoolean", () => {
   it("should return true for true", () => {
@@ -45,5 +45,13 @@ describe("@pievy/types: guards/isTrue", () => {
   });
   it("should return false for false", () => {
     expect(isTrue(false)).toBe(false);
+  });
+});
+describe("@pievy/types: guards/isFalse", () => {
+  it("should return false for false", () => {
+    expect(isFalse(false)).toBe(true);
+  });
+  it("should return false for true", () => {
+    expect(isFalse(true)).toBe(false);
   });
 });
