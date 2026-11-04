@@ -1,7 +1,17 @@
 {
-  "name": "types",
-  "description": "",
-  "keywords": [],
+  "name": "@pievy/types",
+  "description": "Lightweight runtime type checking and TypeScript utilities for JavaScript.",
+  "keywords": [
+    "javascript",
+    "pievy",
+    "runtime-types",
+    "type-checking",
+    "type-guards",
+    "type-safety",
+    "type-utilities",
+    "types",
+    "typescript"
+  ],
   "license": "MIT",
   "author": {
     "name": "Amin Arabi",
