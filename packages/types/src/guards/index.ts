@@ -4,3 +4,4 @@ export * from "./nil";
 export * from "./string";
 export * from "./number";
 export * from "./bigint";
+export * from "./boolean";
