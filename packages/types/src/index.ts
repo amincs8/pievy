@@ -1,2 +1,2 @@
 export * from "./guards";
-export * from "./definitions.d";
+export * from "./types";
