@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isArray } from "./array";
+import { isArray, isArrayEmpty, isArrayNonEmpty } from "./array";
 
 describe("@pievy/types: guards/isArray", () => {
   it("should return true for an empty array", () => {
@@ -46,5 +46,30 @@ describe("@pievy/types: guards/isArrayEmpty", () => {
   });
   it("should return false for a number", () => {
     expect(isArrayEmpty(123)).toBe(false);
+  });
+});
+
+describe("@pievy/types: guards/isArrayNonEmptyisArrayNonEmptyisArrayNonEmpty", () => {
+  it("should return false for an empty array", () => {
+    expect(isArrayNonEmpty([])).toBe(false);
+  });
+  it("should return true for a non-empty array", () => {
+    expect(isArrayNonEmpty([1, 2, 3])).toBe(true);
+  });
+  it("should return false for an empty array object", () => {
+    expect(isArrayNonEmpty(new Array())).toBe(false);
+  });
+  it("should return true for a non-empty array object", () => {
+    expect(isArrayNonEmpty(Array.from([1, 2, 3]))).toBe(true);
+  });
+
+  it("should return false for null", () => {
+    expect(isArrayNonEmpty(null)).toBe(false);
+  });
+  it("should return false for an object", () => {
+    expect(isArrayNonEmpty({})).toBe(false);
+  });
+  it("should return false for a number", () => {
+    expect(isArrayNonEmpty(123)).toBe(false);
   });
 });
