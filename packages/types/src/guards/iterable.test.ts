@@ -3,6 +3,13 @@ import { describe, expect, it } from "vitest";
 import { isAsyncIterable, isIterable } from "./iterable";
 
 describe("@pievy/types: guards/isIterable", () => {
+  it("should return true for an object that has Symbol.iterator", () => {
+    expect(
+      isIterable({
+        [Symbol.iterator]: () => 0,
+      }),
+    ).toBe(true);
+  });
   it("should return true for an empty string", () => {
     expect(isIterable("")).toBe(true);
   });
