@@ -7,3 +7,4 @@ export * from "./bigint";
 export * from "./boolean";
 export * from "./symbol";
 export * from "./object";
+export * from "./array";
