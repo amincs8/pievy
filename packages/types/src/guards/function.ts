@@ -1,5 +1,4 @@
-export type AnyFunction<T = unknown> = (...args: any[]) => T;
-export type AnyFunctionAsync<T = unknown> = (...args: any[]) => Promise<T>;
+import type { AnyFunction, AnyFunctionAsync } from "../definitions";
 
 /**
  * Checks whether a value is a function.

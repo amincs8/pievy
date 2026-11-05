@@ -1,4 +1,4 @@
-export type PlainObject<T = unknown> = Record<PropertyKey, T>;
+import type { PlainObject } from "../definitions";
 
 /**
  * Checks whether a value is an object.
