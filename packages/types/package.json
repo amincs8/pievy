@@ -42,8 +42,8 @@
   },
   "packageManager": "pnpm@12.16.1",
   "devDependencies": {
+    "unplugin-dts": "^1.1.2",
     "vite": "^8.3.5",
-    "vite-plugin-dts": "^5.1.2",
     "vitest": "^5.1.0"
   }
 }
