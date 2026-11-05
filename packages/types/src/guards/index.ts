@@ -6,3 +6,4 @@ export * from "./number";
 export * from "./bigint";
 export * from "./boolean";
 export * from "./symbol";
+export * from "./object";
