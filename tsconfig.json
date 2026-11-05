@@ -47,7 +47,9 @@
     "noUnusedParameters": true,
     "exactOptionalPropertyTypes": true,
 
-    "rootDir": "."
+    "rootDir": ".",
+
+    "removeComments": true
   },
 
   "exclude": ["node_modules", "dist", "coverage", ".turbo"]

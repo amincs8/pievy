@@ -8,16 +8,18 @@ export const baseViteConfig = defineConfig({
       fileName: "index",
       formats: ["es"],
     },
-    minify: false,
     rolldownOptions: {
       external: [],
       output: {
+        comments: false,
         entryFileNames: "[name].js",
+        minify: false,
         preserveModules: true, // 👈 keep module structure
         preserveModulesRoot: "src", // 👈 trim folder nesting,
       },
     },
     sourcemap: false,
+    target: "esnext",
   },
 
   plugins: [
