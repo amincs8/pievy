@@ -5,3 +5,4 @@ export * from "./string";
 export * from "./number";
 export * from "./bigint";
 export * from "./boolean";
+export * from "./symbol";
