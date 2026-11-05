@@ -10,3 +10,4 @@ export * from "./object";
 export * from "./array";
 export * from "./function";
 export * from "./iterable";
+export * from "./iterator";
