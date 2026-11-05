@@ -114,3 +114,65 @@ export type AbstractConstructor<T = object, Args extends unknown[] = any[]> = ab
 export type XOR<T, U> =
   | (T & { [K in Exclude<keyof U, keyof T>]?: never })
   | (U & { [K in Exclude<keyof T, keyof U>]?: never });
+
+/**
+ * Recursively makes all properties of a value readonly.
+ *
+ * This is useful for immutable config objects and state snapshots.
+ */
+export type DeepReadonly<T> = T extends (...args: any[]) => any
+  ? T
+  : T extends readonly (infer U)[]
+    ? ReadonlyArray<DeepReadonly<U>>
+    : T extends object
+      ? { readonly [K in keyof T]: DeepReadonly<T[K]> }
+      : T;
+
+/**
+ * Recursively makes all properties of a value optional.
+ *
+ * This is especially helpful for partial update payloads and patch objects.
+ */
+export type DeepPartial<T> = T extends (...args: any[]) => any
+  ? T
+  : T extends readonly (infer U)[]
+    ? DeepPartial<U>[]
+    : T extends object
+      ? { [K in keyof T]?: DeepPartial<T[K]> }
+      : T;
+
+/**
+ * Converts an object type into a tuple array of `[key, value]` pairs.
+ *
+ * Useful when you want to iterate over object entries in a type-safe way.
+ */
+export type Entries<T extends object> = {
+  [K in keyof T]: [K, T[K]];
+}[keyof T][];
+
+/**
+ * Flattens a complex type into a more readable representation for IDEs.
+ *
+ * This is useful for debugging or presenting inferred types more cleanly.
+ */
+export type Prettify<T> = {
+  [K in keyof T]: T[K];
+} & {};
+
+/**
+ * Converts a union type into the intersection of all its members.
+ *
+ * Commonly used with utility types that depend on distributive behavior.
+ */
+export type UnionToIntersection<T> = (T extends unknown ? (value: T) => void : never) extends (
+  value: infer I,
+) => void
+  ? I
+  : never;
+
+/**
+ * Extracts the keys of an object whose values are optional.
+ */
+export type OptionalKeysOf<T extends object> = {
+  [K in keyof T]-?: {} extends Pick<T, K> ? K : never;
+}[keyof T];
