@@ -5,6 +5,7 @@ import { Command, Option } from "commander";
 import { cleanCommand } from "./internal/clean.js";
 import { loadData, setRootPath } from "./internal/data.js";
 import { inspectPackageCommand } from "./internal/inspect.js";
+import { overviewCommand } from "./internal/overview.js";
 import { packagesCommandActions } from "./internal/packages.js";
 
 // Load required data
@@ -46,6 +47,16 @@ program
   .addOption(new Option("-j, --json", "Output the full package manifest as JSON"))
   .helpCommand(true)
   .action(inspectPackageCommand);
+
+// overview
+program
+  .command("overview")
+  .description("Summarize the repository and its workspace packages")
+  .addOption(new Option("-p, --packages", "Show package descriptions and paths"))
+  .addOption(new Option("-s, --scripts", "Show root package scripts"))
+  .addOption(new Option("-j, --json", "Output the repository summary as JSON"))
+  .helpCommand(true)
+  .action(overviewCommand);
 
 // clean
 program
