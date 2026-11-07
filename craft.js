@@ -2,6 +2,7 @@
 
 import { Command, Option } from "commander";
 
+import { cleanCommand } from "./internal/clean.js";
 import { loadData, setRootPath } from "./internal/data.js";
 import { inspectPackageCommand } from "./internal/inspect.js";
 import { packagesCommandActions } from "./internal/packages.js";
@@ -45,5 +46,13 @@ program
   .addOption(new Option("-j, --json", "Output the full package manifest as JSON"))
   .helpCommand(true)
   .action(inspectPackageCommand);
+
+// clean
+program
+  .command("clean [package]")
+  .description("Remove generated build and test outputs")
+  .addOption(new Option("--dry-run", "List generated outputs without removing them"))
+  .helpCommand(true)
+  .action(cleanCommand);
 
 program.parse(process.argv);
