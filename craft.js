@@ -3,6 +3,7 @@
 import { Command, Option } from "commander";
 
 import { cleanCommand } from "./internal/clean.js";
+import { createCommand } from "./internal/create.js";
 import { loadData, setRootPath } from "./internal/data.js";
 import { inspectPackageCommand } from "./internal/inspect.js";
 import { overviewCommand } from "./internal/overview.js";
@@ -35,6 +36,7 @@ program
   .addOption(keyOp)
   .addOption(filterOp)
   .addOption(new Option("-q, --quiet", "Show only package names"))
+  .helpOption("-h, --help")
   .helpCommand(true)
   .action(packagesCommandActions);
 
@@ -45,6 +47,7 @@ program
   .addOption(new Option("-d, --dependencies", "Show all dependency groups"))
   .addOption(new Option("-s, --scripts", "Show package scripts"))
   .addOption(new Option("-j, --json", "Output the full package manifest as JSON"))
+  .helpOption("-h, --help")
   .helpCommand(true)
   .action(inspectPackageCommand);
 
@@ -55,14 +58,33 @@ program
   .addOption(new Option("-p, --packages", "Show package descriptions and paths"))
   .addOption(new Option("-s, --scripts", "Show root package scripts"))
   .addOption(new Option("-j, --json", "Output the repository summary as JSON"))
+  .helpOption("-h, --help")
   .helpCommand(true)
   .action(overviewCommand);
+
+// create
+program
+  .command("create <name>")
+  .description("Create a workspace package from the basic template")
+  .addOption(new Option("-d, --description <description>", "Set the package description"))
+  .addOption(new Option("-k, --keywords <keywords...>", "Set package keywords"))
+  .addOption(
+    new Option("-t, --template <template>", "Select a package template")
+      .default("basic")
+      .choices(["basic"]),
+  )
+  .addOption(new Option("--author-name <name>", "Set the package author's name"))
+  .addOption(new Option("--author-email <email>", "Set the package author's email"))
+  .helpOption("-h, --help")
+  .helpCommand(true)
+  .action(createCommand);
 
 // clean
 program
   .command("clean [package]")
   .description("Remove generated build and test outputs")
   .addOption(new Option("--dry-run", "List generated outputs without removing them"))
+  .helpOption("-h, --help")
   .helpCommand(true)
   .action(cleanCommand);
 
