@@ -3,6 +3,7 @@
 import { Command, Option } from "commander";
 
 import { loadData, setRootPath } from "./internal/data.js";
+import { inspectPackageCommand } from "./internal/inspect.js";
 import { packagesCommandActions } from "./internal/packages.js";
 
 // Load required data
@@ -32,7 +33,17 @@ program
   .addOption(keyOp)
   .addOption(filterOp)
   .addOption(new Option("-q, --quiet", "Show only package names"))
-  .addHelpOption()
+  .helpCommand(true)
   .action(packagesCommandActions);
+
+// inspect
+program
+  .command("inspect <package>")
+  .description("Show details about a workspace package")
+  .addOption(new Option("-d, --dependencies", "Show all dependency groups"))
+  .addOption(new Option("-s, --scripts", "Show package scripts"))
+  .addOption(new Option("-j, --json", "Output the full package manifest as JSON"))
+  .helpCommand(true)
+  .action(inspectPackageCommand);
 
 program.parse(process.argv);
