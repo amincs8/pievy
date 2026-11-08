@@ -6,7 +6,7 @@ import {
   type PlainObject,
 } from "@pievy/types";
 
-import { STOP } from "./consts";
+import { STOP } from "../consts";
 import { forEachAsync } from "./for-each-async";
 
 type AsyncIterableCallback<T> = (value: T, index: number, loopCount: number) => Promise<unknown>;

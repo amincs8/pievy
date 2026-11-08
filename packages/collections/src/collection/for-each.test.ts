@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { STOP } from "./consts";
+import { STOP } from "../consts";
 import { forEach } from "./for-each";
 
 describe("@pievy/collections: collection/forEach", () => {

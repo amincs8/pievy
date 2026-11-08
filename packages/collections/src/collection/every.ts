@@ -1,6 +1,6 @@
 import { isFunction, isIterable, isPlainObject, type PlainObject, type XOR } from "@pievy/types";
 
-import { STOP } from "./consts";
+import { STOP } from "../consts";
 import { forEach } from "./for-each";
 
 type IterableCallback<T> = (value: T, index: number, loopCount: number) => unknown;

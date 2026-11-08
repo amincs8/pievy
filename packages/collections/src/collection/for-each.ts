@@ -1,9 +1,9 @@
 import { isFunction, isIterable, isPlainObject, type PlainObject } from "@pievy/types";
 
-import { STOP, type StopSignal } from "./consts";
+import { STOP, type LoopControl } from "../consts";
 
-type IterableCallback<T> = (value: T, index: number, loopCount: number) => StopSignal;
-type ObjectCallback<T> = (value: T, key: string, loopCount: number) => StopSignal;
+type IterableCallback<T> = (value: T, index: number, loopCount: number) => LoopControl;
+type ObjectCallback<T> = (value: T, key: string, loopCount: number) => LoopControl;
 
 /**
  * Calls a callback for each value in an iterable or each own enumerable value in a plain object.

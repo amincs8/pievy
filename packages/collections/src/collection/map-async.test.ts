@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { STOP } from "./consts";
+import { STOP } from "../consts";
 import { mapAsync } from "./map-async";
 
 describe("@pievy/collections: collection/mapAsync", () => {
@@ -31,7 +31,10 @@ describe("@pievy/collections: collection/mapAsync", () => {
   });
 
   it("should preserve plain object keys while awaiting mapped values", async () => {
-    const result = await mapAsync({ first: 10, second: 20 }, async (value, key) => `${key}:${value}`);
+    const result = await mapAsync(
+      { first: 10, second: 20 },
+      async (value, key) => `${key}:${value}`,
+    );
 
     expect(result).toEqual({ first: "first:10", second: "second:20" });
   });

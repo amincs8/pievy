@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { STOP } from "./consts";
+import { STOP } from "../consts";
 import { map } from "./map";
 
 describe("@pievy/collections: collection/map", () => {

@@ -6,10 +6,10 @@ import {
   type PlainObject,
 } from "@pievy/types";
 
-import { STOP, type StopSignal } from "./consts";
+import { STOP, type LoopControl } from "../consts";
 
-type AsyncIterableCallback<T> = (value: T, index: number, loopCount: number) => Promise<StopSignal>;
-type AsyncObjectCallback<T> = (value: T, key: string, loopCount: number) => Promise<StopSignal>;
+type AsyncIterableCallback<T> = (value: T, index: number, loopCount: number) => Promise<LoopControl>;
+type AsyncObjectCallback<T> = (value: T, key: string, loopCount: number) => Promise<LoopControl>;
 
 /**
  * Awaits a callback for each value in an async iterable, iterable, or plain object.
