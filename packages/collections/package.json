@@ -1,0 +1,42 @@
+{
+  "name": "@pievy/collections",
+  "description": "Lightweight utilities for working with JavaScript collections.",
+  "keywords": [
+    "collections",
+    "pievy"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Amin Arabi",
+    "email": "amincs@outlook.com"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "unplugin-dts": "^1.1.2",
+    "vite": "^8.3.5",
+    "vitest": "^5.1.0"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.16.1",
+      "onFail": "download"
+    }
+  },
+  "packageManager": "pnpm@12.16.1"
+}
