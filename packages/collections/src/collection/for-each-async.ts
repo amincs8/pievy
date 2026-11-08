@@ -9,6 +9,25 @@ type AsyncIterableCallback<T> = (
 ) => Promise<StopSignal>;
 type AsyncObjectCallback<T> = (value: T, key: string, loopCount: number) => Promise<StopSignal>;
 
+/**
+ * Awaits a callback for each value in an async iterable, iterable, or plain object.
+ *
+ * Callbacks run sequentially. Return {@link STOP} to stop iteration. Iterable
+ * callbacks receive the value, numeric index, and loop count; object callbacks
+ * receive the value, string key, and loop count.
+ *
+ * @param values - Async iterable, iterable, or plain object to traverse.
+ * @param callbackfn - Asynchronous function invoked for each value.
+ * @returns A promise that resolves when iteration completes.
+ *
+ * @example
+ * ```ts
+ * await forEachAsync(items, async (item, index) => {
+ *   await save(item);
+ *   console.log(index);
+ * });
+ * ```
+ */
 export function forEachAsync<T>(
   values: AsyncIterable<T>,
   callbackfn: AsyncIterableCallback<T>,

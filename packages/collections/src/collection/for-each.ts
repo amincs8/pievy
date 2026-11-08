@@ -5,6 +5,23 @@ import { STOP, type StopSignal } from "./consts";
 type IterableCallback<T> = (value: T, index: number, loopCount: number) => StopSignal;
 type ObjectCallback<T> = (value: T, key: string, loopCount: number) => StopSignal;
 
+/**
+ * Calls a callback for each value in an iterable or each own enumerable value in a plain object.
+ *
+ * Return {@link STOP} from the callback to stop iteration. For iterable inputs,
+ * the callback receives the value, numeric index, and loop count. For objects,
+ * it receives the value, string key, and loop count.
+ *
+ * @param values - Iterable or plain object to traverse.
+ * @param callbackfn - Function invoked for each value.
+ * @returns Nothing.
+ *
+ * @example
+ * ```ts
+ * forEach(["a", "b"], (value, index) => console.log(index, value));
+ * forEach({ first: 1, second: 2 }, (value, key) => console.log(key, value));
+ * ```
+ */
 export function forEach<T>(values: Iterable<T>, callbackfn: IterableCallback<T>): void;
 export function forEach<T extends PlainObject>(
   values: T,

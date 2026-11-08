@@ -9,6 +9,23 @@ type MappedObject<T, U> = {
   [K in keyof T as K extends string | number ? `${K}` : never]: U;
 };
 
+/**
+ * Maps an iterable to an array or a plain object to a new object with mapped values.
+ *
+ * Iterable callbacks receive the value, numeric index, and loop count. Plain
+ * object callbacks receive the value, string key, and loop count. The callback's
+ * return value is included in the result; returning {@link STOP} does not stop mapping.
+ *
+ * @param values - Iterable or plain object to map.
+ * @param callbackfn - Function that transforms each value.
+ * @returns An array for iterable inputs, or an object with the original keys for plain objects.
+ *
+ * @example
+ * ```ts
+ * map([1, 2], (value) => value * 2); // [2, 4]
+ * map({ count: 2 }, (value) => value * 2); // { count: 4 }
+ * ```
+ */
 export function map<T, U>(values: Iterable<T>, callbackfn: IterableCallback<T, U>): U[];
 export function map<U, T extends PlainObject>(
   values: T,
