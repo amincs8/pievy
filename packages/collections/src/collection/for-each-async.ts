@@ -1,12 +1,14 @@
-import { isAsyncIterable, isFunction, isIterable, isPlainObject, type PlainObject } from "@pievy/types";
+import {
+  isAsyncIterable,
+  isFunction,
+  isIterable,
+  isPlainObject,
+  type PlainObject,
+} from "@pievy/types";
 
 import { STOP, type StopSignal } from "./consts";
 
-type AsyncIterableCallback<T> = (
-  value: T,
-  index: number,
-  loopCount: number,
-) => Promise<StopSignal>;
+type AsyncIterableCallback<T> = (value: T, index: number, loopCount: number) => Promise<StopSignal>;
 type AsyncObjectCallback<T> = (value: T, key: string, loopCount: number) => Promise<StopSignal>;
 
 /**
@@ -32,7 +34,10 @@ export function forEachAsync<T>(
   values: AsyncIterable<T>,
   callbackfn: AsyncIterableCallback<T>,
 ): Promise<void>;
-export function forEachAsync<T>(values: Iterable<T>, callbackfn: AsyncIterableCallback<T>): Promise<void>;
+export function forEachAsync<T>(
+  values: Iterable<T>,
+  callbackfn: AsyncIterableCallback<T>,
+): Promise<void>;
 export function forEachAsync<T extends PlainObject>(
   values: T,
   callbackfn: AsyncObjectCallback<T[keyof T]>,
