@@ -1,5 +1,5 @@
-import { defineConfig } from "vite";
 import dts from "unplugin-dts/vite";
+import { defineConfig } from "vite";
 
 export const baseViteConfig = defineConfig({
   build: {
