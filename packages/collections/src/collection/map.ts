@@ -1,9 +1,8 @@
 import { isFunction, isIterable, isPlainObject, type PlainObject } from "@pievy/types";
 
+import type { IterableCallback, ObjectCallback } from "../types";
 import { forEach } from "./for-each";
 
-type IterableCallback<T, U> = (value: T, index: number, loopCount: number) => U;
-type ObjectCallback<T, U> = (value: T, key: string, loopCount: number) => U;
 type ObjectValue<T> = [T[keyof T]] extends [never] ? unknown : T[keyof T];
 type MappedObject<T, U> = {
   [K in keyof T as K extends string | number ? `${K}` : never]: U;

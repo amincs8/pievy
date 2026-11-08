@@ -7,10 +7,8 @@ import {
 } from "@pievy/types";
 
 import { STOP } from "../consts";
+import type { AsyncIterableCallback, AsyncObjectCallback } from "../types";
 import { forEachAsync } from "./for-each-async";
-
-type AsyncIterableCallback<T> = (value: T, index: number, loopCount: number) => Promise<unknown>;
-type AsyncObjectCallback<T> = (value: T, key: string, loopCount: number) => Promise<unknown>;
 
 /**
  * Asynchronously tests whether every value in an async iterable, iterable, or plain object passes.

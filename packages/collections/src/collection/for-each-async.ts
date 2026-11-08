@@ -7,9 +7,7 @@ import {
 } from "@pievy/types";
 
 import { STOP, type LoopControl } from "../consts";
-
-type AsyncIterableCallback<T> = (value: T, index: number, loopCount: number) => Promise<LoopControl>;
-type AsyncObjectCallback<T> = (value: T, key: string, loopCount: number) => Promise<LoopControl>;
+import type { AsyncIterableCallback, AsyncObjectCallback } from "../types";
 
 /**
  * Awaits a callback for each value in an async iterable, iterable, or plain object.
@@ -32,15 +30,15 @@ type AsyncObjectCallback<T> = (value: T, key: string, loopCount: number) => Prom
  */
 export function forEachAsync<T>(
   values: AsyncIterable<T>,
-  callbackfn: AsyncIterableCallback<T>,
+  callbackfn: AsyncIterableCallback<T, LoopControl>,
 ): Promise<void>;
 export function forEachAsync<T>(
   values: Iterable<T>,
-  callbackfn: AsyncIterableCallback<T>,
+  callbackfn: AsyncIterableCallback<T, LoopControl>,
 ): Promise<void>;
 export function forEachAsync<T extends PlainObject>(
   values: T,
-  callbackfn: AsyncObjectCallback<T[keyof T]>,
+  callbackfn: AsyncObjectCallback<T[keyof T], LoopControl>,
 ): Promise<void>;
 
 export async function forEachAsync(values: unknown, callbackfn: Function): Promise<void> {

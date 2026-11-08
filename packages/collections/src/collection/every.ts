@@ -1,10 +1,8 @@
 import { isFunction, isIterable, isPlainObject, type PlainObject, type XOR } from "@pievy/types";
 
 import { STOP } from "../consts";
+import type { IterableCallback, ObjectCallback } from "../types";
 import { forEach } from "./for-each";
-
-type IterableCallback<T> = (value: T, index: number, loopCount: number) => unknown;
-type ObjectCallback<T> = (value: T, key: string, loopCount: number) => unknown;
 
 /**
  * Tests whether every value in an iterable or plain object passes a predicate.

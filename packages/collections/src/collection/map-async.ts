@@ -6,10 +6,9 @@ import {
   type PlainObject,
 } from "@pievy/types";
 
+import type { AsyncIterableCallback, AsyncObjectCallback } from "../types";
 import { forEachAsync } from "./for-each-async";
 
-type AsyncIterableCallback<T, U> = (value: T, index: number, loopCount: number) => Promise<U>;
-type AsyncObjectCallback<T, U> = (value: T, key: string, loopCount: number) => Promise<U>;
 type ObjectValue<T> = [T[keyof T]] extends [never] ? unknown : T[keyof T];
 type MappedObject<T, U> = {
   [K in keyof T as K extends string | number ? `${K}` : never]: U;

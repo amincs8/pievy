@@ -1,9 +1,7 @@
 import { isFunction, isIterable, isPlainObject, type PlainObject } from "@pievy/types";
 
 import { STOP, type LoopControl } from "../consts";
-
-type IterableCallback<T> = (value: T, index: number, loopCount: number) => LoopControl;
-type ObjectCallback<T> = (value: T, key: string, loopCount: number) => LoopControl;
+import type { IterableCallback, ObjectCallback } from "../types";
 
 /**
  * Calls a callback for each value in an iterable or each own enumerable value in a plain object.
@@ -22,10 +20,10 @@ type ObjectCallback<T> = (value: T, key: string, loopCount: number) => LoopContr
  * forEach({ first: 1, second: 2 }, (value, key) => console.log(key, value));
  * ```
  */
-export function forEach<T>(values: Iterable<T>, callbackfn: IterableCallback<T>): void;
+export function forEach<T>(values: Iterable<T>, callbackfn: IterableCallback<T, LoopControl>): void;
 export function forEach<T extends PlainObject>(
   values: T,
-  callbackfn: ObjectCallback<T[keyof T]>,
+  callbackfn: ObjectCallback<T[keyof T], LoopControl>,
 ): void;
 
 export function forEach(values: unknown, callbackfn: Function): void {
