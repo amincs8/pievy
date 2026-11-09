@@ -1,20 +1,28 @@
-import { isFunction, isIterable, isPlainObject, type PlainObject, type XOR } from "@pievy/types";
+import {
+  isAsyncIterable,
+  isFunction,
+  isIterable,
+  isPlainObject,
+  type PlainObject,
+  type XOR,
+} from "@pievy/types";
 
 import { STOP } from "../consts";
 import { forEach } from "./for-each";
+import { forEachAsync } from "./for-each-async";
 
 /**
- * Tests whether a collection fails a predicate before the traversal completes.
+ * Evaluates whether every visited value in a collection satisfies a predicate.
  *
- * The callback is invoked for each value in an iterable or plain object. If the
- * callback result matches `stopIteration`, the traversal stops and the function
- * returns `false`. When no entries trigger a stop condition, it returns `true`.
+ * The predicate is called for each entry in an iterable or plain object. If it
+ * returns the configured `stopIteration` value, iteration stops immediately and
+ * this helper returns `false`. When no value causes a stop, it returns `true`.
  *
- * @param values - Iterable or plain object to inspect.
- * @param predicateFn - Predicate invoked with each value, index/key, and loop count.
- * @param strict - When `true`, match with strict equality; otherwise use loose comparison.
- * @param stopIteration - Value against which callback results are compared to stop iteration.
- * @returns `true` when no visited value triggers the stop condition; otherwise `false`.
+ * @param values - Iterable or plain object to traverse.
+ * @param predicateFn - Callback invoked with the current value, its index/key, and loop count.
+ * @param strict - When `true`, compare with strict equality; otherwise use loose equality.
+ * @param stopIteration - Predicate result that terminates iteration.
+ * @returns `true` if iteration completes without a matching stop condition; otherwise `false`.
  */
 export function _predicate(
   values: unknown,
@@ -42,6 +50,49 @@ export function _predicate(
         };
 
   forEach(values as XOR<Iterable<unknown>, PlainObject>, fn);
+
+  return result;
+}
+
+/**
+ * Asynchronously evaluates whether every visited value in a collection satisfies a predicate.
+ *
+ * This helper mirrors {@link _predicate}, but it awaits each predicate result before
+ * continuing. Iteration stops as soon as the callback resolves to the configured
+ * `stopIteration` value, returning `false` for the overall check.
+ *
+ * @param values - Async iterable, iterable, or plain object to traverse.
+ * @param predicateFn - Async callback invoked with the current value, its index/key, and loop count.
+ * @param strict - When `true`, compare with strict equality; otherwise use loose equality.
+ * @param stopIteration - Predicate result that terminates iteration.
+ * @returns A promise resolving to `true` if the collection completes without a matching stop condition; otherwise `false`.
+ */
+export async function _predicateAsync(
+  values: unknown,
+  predicateFn: Function,
+  strict: boolean,
+  stopIteration: boolean,
+): Promise<boolean> {
+  if (!isFunction(predicateFn)) return false;
+  if (!isAsyncIterable(values) && !isIterable(values) && !isPlainObject(values)) return false;
+
+  let result = true;
+  const fn: (value: unknown, index: PropertyKey, loopCount: number) => Promise<void | typeof STOP> =
+    strict === true
+      ? async (value, index, loopCount) => {
+          if ((await predicateFn(value, index, loopCount)) === stopIteration) {
+            result = false;
+            return STOP;
+          }
+        }
+      : async (value, index, loopCount) => {
+          if ((await predicateFn(value, index, loopCount)) == stopIteration) {
+            result = false;
+            return STOP;
+          }
+        };
+
+  await forEachAsync(values, fn);
 
   return result;
 }
