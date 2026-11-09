@@ -1,8 +1,7 @@
-import { isFunction, isIterable, isPlainObject, type PlainObject, type XOR } from "@pievy/types";
+import type { PlainObject } from "@pievy/types";
 
-import { STOP } from "../consts";
 import type { IterableCallback, ObjectCallback } from "../types";
-import { forEach } from "./for-each";
+import { _predicate } from "./_predicate";
 
 /**
  * Tests whether every value in an iterable or plain object passes a predicate.
@@ -46,27 +45,6 @@ export function every<T extends PlainObject>(
   strict: true,
 ): boolean;
 
-export function every(values: unknown, callbackfn: Function, strict = false): boolean {
-  if (!isFunction(callbackfn)) return false;
-  if (!isIterable(values) && !isPlainObject(values)) return false;
-
-  let result = true;
-  const fn: (value: unknown, index: PropertyKey, loopCount: number) => void | typeof STOP =
-    strict === true
-      ? (value, index, loopCount) => {
-          if (callbackfn(value, index, loopCount) === false) {
-            result = false;
-            return STOP;
-          }
-        }
-      : (value, index, loopCount) => {
-          if (!callbackfn(value, index, loopCount)) {
-            result = false;
-            return STOP;
-          }
-        };
-
-  forEach(values as XOR<Iterable<unknown>, PlainObject>, fn);
-
-  return result;
+export function every(values: unknown, predicateFn: Function, strict = false): boolean {
+  return _predicate(values, predicateFn, strict, false);
 }

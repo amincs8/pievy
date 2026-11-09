@@ -1,14 +1,7 @@
-import {
-  isAsyncIterable,
-  isFunction,
-  isIterable,
-  isPlainObject,
-  type PlainObject,
-} from "@pievy/types";
+import type { PlainObject } from "@pievy/types";
 
-import { STOP } from "../consts";
 import type { AsyncIterableCallback, AsyncObjectCallback } from "../types";
-import { forEachAsync } from "./for-each-async";
+import { _predicateAsync } from "./_predicate";
 
 /**
  * Asynchronously tests whether every value in an async iterable, iterable, or plain object passes.
@@ -18,7 +11,7 @@ import { forEachAsync } from "./for-each-async";
  * only an explicit `false` result fails. Empty collections return `true`.
  *
  * @param values - Async iterable, iterable, or plain object whose values are tested.
- * @param callbackfn - Asynchronous predicate called with the value, index or key, and loop count.
+ * @param predicateFn - Asynchronous predicate called with the value, index or key, and loop count.
  * @param strict - When true, only a literal `false` result fails; defaults to false.
  * @returns A promise that resolves to whether every visited value passes.
  *
@@ -31,54 +24,29 @@ import { forEachAsync } from "./for-each-async";
  */
 export function everyAsync<T>(
   values: AsyncIterable<T>,
-  callbackfn: AsyncIterableCallback<T>,
+  predicateFn: AsyncIterableCallback<T>,
   strict?: false,
 ): Promise<boolean>;
 export function everyAsync<T>(
   values: AsyncIterable<T>,
-  callbackfn: AsyncIterableCallback<T>,
+  predicateFn: AsyncIterableCallback<T>,
   strict: true,
 ): Promise<boolean>;
 export function everyAsync<T>(
   values: Iterable<T>,
-  callbackfn: AsyncIterableCallback<T>,
+  predicateFn: AsyncIterableCallback<T>,
   strict?: boolean,
 ): Promise<boolean>;
 export function everyAsync<T extends PlainObject>(
   values: T,
-  callbackfn: AsyncObjectCallback<T[keyof T]>,
+  predicateFn: AsyncObjectCallback<T[keyof T]>,
   strict?: boolean,
 ): Promise<boolean>;
 
 export async function everyAsync(
   values: unknown,
-  callbackfn: Function,
+  predicateFn: Function,
   strict = false,
 ): Promise<boolean> {
-  if (!isFunction(callbackfn)) return false;
-  if (!isAsyncIterable(values) && !isIterable(values) && !isPlainObject(values)) return false;
-
-  let result = true;
-  const predicate: (
-    value: unknown,
-    index: PropertyKey,
-    loopCount: number,
-  ) => Promise<void | typeof STOP> =
-    strict === true
-      ? async (value, index, loopCount) => {
-          if ((await callbackfn(value, index, loopCount)) === false) {
-            result = false;
-            return STOP;
-          }
-        }
-      : async (value, index, loopCount) => {
-          if (!(await callbackfn(value, index, loopCount))) {
-            result = false;
-            return STOP;
-          }
-        };
-
-  await forEachAsync(values, predicate);
-
-  return result;
+  return await _predicateAsync(values, predicateFn, strict, false);
 }
