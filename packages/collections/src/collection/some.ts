@@ -54,5 +54,5 @@ export function some(values: unknown, predicateFn: Function, strict = false): bo
     values,
   });
 
-  return result.isInputValid === true ? !result.returnValue : false;
+  return result.isInputValid && !result.returnValue;
 }

@@ -54,5 +54,5 @@ export function every(values: unknown, predicateFn: Function, strict = false): b
     values,
   });
 
-  return result.isInputValid === true && result.returnValue === true;
+  return result.isInputValid === true && result.returnValue!;
 }

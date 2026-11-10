@@ -32,7 +32,7 @@ interface PredicateArgsStop extends PredicateArgsBase {
 }
 
 interface PredicateReturn {
-  returnValue: boolean;
+  returnValue?: boolean;
   isInputValid: boolean;
 }
 
@@ -47,9 +47,7 @@ interface PredicateReturn {
  * @param args - Collection input, predicate callback, and the stop condition to apply.
  * @returns The normalized validation state and the current accumulated boolean value.
  */
-export function _predicate(
-  args: XOR<PredicateArgsStopValue, PredicateArgsStop>,
-): Partial<PredicateReturn> {
+export function _predicate(args: XOR<PredicateArgsStopValue, PredicateArgsStop>): PredicateReturn {
   const { values, predicateFn } = args;
 
   if (!isFunction(predicateFn) || !(isIterable(values) || isPlainObject(values))) {
@@ -93,7 +91,7 @@ export function _predicate(
  */
 export async function _predicateAsync(
   args: XOR<PredicateArgsStopValue, PredicateArgsStop>,
-): Promise<Partial<PredicateReturn>> {
+): Promise<PredicateReturn> {
   const { values, predicateFn } = args;
 
   if (

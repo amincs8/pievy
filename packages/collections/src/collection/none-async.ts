@@ -57,5 +57,5 @@ export async function noneAsync(
     values,
   });
 
-  return result.isInputValid === true ? result.returnValue === true : false;
+  return result.isInputValid === true && result.returnValue!;
 }
