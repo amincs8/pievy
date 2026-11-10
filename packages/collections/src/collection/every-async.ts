@@ -46,7 +46,7 @@ export function everyAsync<T extends PlainObject>(
 export async function everyAsync(
   values: unknown,
   predicateFn: Function,
-  strict = false,
+  strict = true,
 ): Promise<boolean> {
   const result = await _predicateAsync({
     predicateFn,

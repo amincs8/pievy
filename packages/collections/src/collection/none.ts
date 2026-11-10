@@ -45,7 +45,7 @@ export function none<T extends PlainObject>(
   strict: true,
 ): boolean;
 
-export function none(values: unknown, predicateFn: Function, strict = false): boolean {
+export function none(values: unknown, predicateFn: Function, strict = true): boolean {
   const result = _predicate({
     predicateFn,
     retuenValueInit: true,
