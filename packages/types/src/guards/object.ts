@@ -1,4 +1,4 @@
-import type { PlainObject } from "../definitions";
+import type { PlainObject } from "../types";
 
 /**
  * Checks whether a value is an object.

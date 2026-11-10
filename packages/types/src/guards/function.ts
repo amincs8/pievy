@@ -1,4 +1,4 @@
-import type { AnyFunction, AnyFunctionAsync } from "../definitions";
+import type { AnyFunction, AnyFunctionAsync } from "../types";
 
 /**
  * Checks whether a value is a function.
