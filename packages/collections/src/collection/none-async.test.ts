@@ -55,11 +55,11 @@ describe("@pievy/collections: collection/noneAsync", () => {
     expect(await noneAsync({}, async () => true)).toBe(true);
   });
 
-  it("should use truthiness by default and only accept true in strict mode", async () => {
-    expect(await noneAsync([0, 1, 0], async (value) => value)).toBe(false);
-    expect(await noneAsync([0, 1, 0], async (value) => value === 1, true)).toBe(false);
-    expect(await noneAsync([0, 1, 0], async (value) => value, true)).toBe(true);
-    expect(await noneAsync([0, 0], async () => 1, true)).toBe(true);
+  it("should use strict true-only comparison by default", async () => {
+    expect(await noneAsync([0], async () => true)).toBe(false);
+    expect(await noneAsync([0], async () => 1)).toBe(true);
+    expect(await noneAsync([0], async () => 1, false)).toBe(false);
+    expect(await noneAsync([0], async () => 1, true)).toBe(true);
   });
 
   it("should return false for invalid input values and predicatefn", async () => {

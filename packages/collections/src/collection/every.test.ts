@@ -43,10 +43,10 @@ describe("@pievy/collections: collection/every", () => {
     expect(every([1, 2, 3], (value) => value)).toBe(true);
   });
 
-  it("should use truthiness by default and only reject false in strict mode", () => {
-    expect(every([0], () => 0)).toBe(false);
-    expect(every([0], () => 0, true)).toBe(true);
-    expect(every([0], () => false, true)).toBe(false);
+  it("should use strict false-only comparison by default", () => {
+    expect(every([0], () => 0)).toBe(true);
+    expect(every([0], () => false)).toBe(false);
+    expect(every([0], () => 0, false)).toBe(false);
   });
 
   it("shoult return false for input values and predicatefn", () => {

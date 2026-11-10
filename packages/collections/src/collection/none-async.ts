@@ -6,14 +6,14 @@ import { _predicateAsync } from "./_predicate";
 /**
  * Asynchronously tests whether no value in an async iterable, iterable, or plain object passes.
  *
- * Callbacks are awaited sequentially and iteration stops at the first truthy
- * predicate result. By default, results are tested for truthiness; with
- * `strict: true`, only an explicit `true` result counts as a match. Empty
- * collections return `true`.
+ * Callbacks are awaited sequentially and iteration stops at the first matching
+ * predicate result. By default, only an explicit `true` result counts as a
+ * match; with `strict: false`, predicate results are evaluated by truthiness.
+ * Empty collections return `true`.
  *
  * @param values - Async iterable, iterable, or plain object whose values are tested.
  * @param predicateFn - Asynchronous predicate called with the value, index or key, and loop count.
- * @param strict - When `true`, only a literal `true` result matches; defaults to `false`.
+ * @param strict - When `true`, only a literal `true` result matches; defaults to `true`.
  * @returns A promise that resolves to whether no visited value passes.
  *
  * @example
@@ -26,12 +26,7 @@ import { _predicateAsync } from "./_predicate";
 export function noneAsync<T>(
   values: AsyncIterable<T>,
   predicateFn: AsyncIterableCallback<T>,
-  strict?: false,
-): Promise<boolean>;
-export function noneAsync<T>(
-  values: AsyncIterable<T>,
-  predicateFn: AsyncIterableCallback<T>,
-  strict: true,
+  strict?: boolean,
 ): Promise<boolean>;
 export function noneAsync<T>(
   values: Iterable<T>,

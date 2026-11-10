@@ -39,15 +39,15 @@ describe("@pievy/collections: collection/some", () => {
     expect(some({}, () => true)).toBe(false);
   });
 
-  it("should treat any truthy predicate result as passing", () => {
-    expect(some([0, 1, 0], (value) => value)).toBe(true);
+  it("should only treat literal true as passing by default", () => {
+    expect(some([0, 1, 0], (value) => value)).toBe(false);
   });
 
-  it("should use truthiness by default and only accept true in strict mode", () => {
-    expect(some([0, 1, 0], (value) => value)).toBe(true);
-    expect(some([0, 1, 0], (value) => value === 1, true)).toBe(true);
-    expect(some([0, 1, 0], (value) => value, true)).toBe(false);
-    expect(some([0, 0], () => 1, true)).toBe(false);
+  it("should use strict true-only comparison by default", () => {
+    expect(some([0], () => true)).toBe(true);
+    expect(some([0], () => 1)).toBe(false);
+    expect(some([0], () => 1, false)).toBe(true);
+    expect(some([0], () => 1, true)).toBe(false);
   });
 
   it("shoult return false for input values and predicatefn", () => {

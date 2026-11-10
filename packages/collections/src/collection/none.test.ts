@@ -39,15 +39,15 @@ describe("@pievy/collections: collection/none", () => {
     expect(none({}, () => true)).toBe(true);
   });
 
-  it("should treat any truthy predicate result as passing", () => {
-    expect(none([0, 1, 0], (value) => value)).toBe(false);
+  it("should only treat literal true as passing by default", () => {
+    expect(none([0, 1, 0], (value) => value)).toBe(true);
   });
 
-  it("should use truthiness by default and only accept true in strict mode", () => {
-    expect(none([0, 1, 0], (value) => value)).toBe(false);
-    expect(none([0, 1, 0], (value) => value === 1, true)).toBe(false);
-    expect(none([0, 1, 0], (value) => value, true)).toBe(true);
-    expect(none([0, 0], () => 1, true)).toBe(true);
+  it("should use strict true-only comparison by default", () => {
+    expect(none([0], () => true)).toBe(false);
+    expect(none([0], () => 1)).toBe(true);
+    expect(none([0], () => 1, false)).toBe(false);
+    expect(none([0], () => 1, true)).toBe(true);
   });
 
   it("should return true for invalid input values and predicatefn", () => {

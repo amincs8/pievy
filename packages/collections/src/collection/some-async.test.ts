@@ -55,10 +55,10 @@ describe("@pievy/collections: collection/someAsync", () => {
     expect(await someAsync({}, async () => true)).toBe(false);
   });
 
-  it("should use truthiness by default and only accept true in strict mode", async () => {
-    expect(await someAsync([0, 1, 0], async (value) => value)).toBe(true);
-    expect(await someAsync([0, 1, 0], async (value) => value === 1, true)).toBe(true);
-    expect(await someAsync([0, 1, 0], async (value) => value, true)).toBe(false);
-    expect(await someAsync([0, 0], async () => 1, true)).toBe(false);
+  it("should use strict true-only comparison by default", async () => {
+    expect(await someAsync([0], async () => true)).toBe(true);
+    expect(await someAsync([0], async () => 1)).toBe(false);
+    expect(await someAsync([0], async () => 1, false)).toBe(true);
+    expect(await someAsync([0], async () => 1, true)).toBe(false);
   });
 });

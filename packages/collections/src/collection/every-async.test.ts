@@ -55,9 +55,9 @@ describe("@pievy/collections: collection/everyAsync", () => {
     expect(await everyAsync({}, async () => false)).toBe(true);
   });
 
-  it("should apply strict false-only comparison when requested", async () => {
-    expect(await everyAsync([0], async () => 0, true)).toBe(true);
-    expect(await everyAsync([0], async () => false, true)).toBe(false);
-    expect(await everyAsync([0], async () => 0)).toBe(false);
+  it("should use strict false-only comparison by default", async () => {
+    expect(await everyAsync([0], async () => 0)).toBe(true);
+    expect(await everyAsync([0], async () => false)).toBe(false);
+    expect(await everyAsync([0], async () => 0, false)).toBe(false);
   });
 });

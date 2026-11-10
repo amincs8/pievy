@@ -7,12 +7,12 @@ import { _predicateAsync } from "./_predicate";
  * Asynchronously tests whether any value in an async iterable, iterable, or plain object passes.
  *
  * Callbacks are awaited sequentially and iteration stops at the first passing
- * result. By default, results are tested for truthiness; with `strict: true`,
- * only an explicit `true` result passes. Empty collections return `false`.
+ * result. By default, only an explicit `true` result passes; with `strict: false`,
+ * results are tested for truthiness. Empty collections return `false`.
  *
  * @param values - Async iterable, iterable, or plain object whose values are tested.
  * @param predicateFn - Asynchronous predicate called with the value, index or key, and loop count.
- * @param strict - When true, only a literal `true` result passes; defaults to false.
+ * @param strict - When true, only a literal `true` result passes; defaults to true.
  * @returns A promise that resolves to whether any visited value passes.
  *
  * @example
@@ -25,12 +25,7 @@ import { _predicateAsync } from "./_predicate";
 export function someAsync<T>(
   values: AsyncIterable<T>,
   predicateFn: AsyncIterableCallback<T>,
-  strict?: false,
-): Promise<boolean>;
-export function someAsync<T>(
-  values: AsyncIterable<T>,
-  predicateFn: AsyncIterableCallback<T>,
-  strict: true,
+  strict?: boolean,
 ): Promise<boolean>;
 export function someAsync<T>(
   values: Iterable<T>,

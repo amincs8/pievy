@@ -6,14 +6,14 @@ import { _predicate } from "./_predicate";
 /**
  * Tests whether at least one value in an iterable or plain object satisfies a predicate.
  *
- * Iteration stops on the first truthy predicate result. Empty collections return
- * `false`, matching the usual existential-quantification behavior. By default,
- * predicate results are checked for truthiness; with `strict: true`, only an
- * explicit `true` result counts.
+ * Iteration stops on the first matching predicate result. Empty collections
+ * return `false`, matching the usual existential-quantification behavior. By
+ * default, only an explicit `true` result counts; with `strict: false`,
+ * predicate results are checked for truthiness.
  *
  * @param values - Iterable or plain object whose values are tested.
  * @param callbackfn - Predicate called with each value, its index or key, and the loop count.
- * @param strict - When `true`, only a literal `true` result matches; defaults to `false`.
+ * @param strict - When `true`, only a literal `true` result matches; defaults to `true`.
  * @returns `true` if any visited value passes; otherwise `false`.
  *
  * @example
@@ -27,22 +27,12 @@ import { _predicate } from "./_predicate";
 export function some<T>(
   values: Iterable<T>,
   callbackfn: IterableCallback<T>,
-  strict?: false,
-): boolean;
-export function some<T>(
-  values: Iterable<T>,
-  callbackfn: IterableCallback<T>,
-  strict: true,
+  strict?: boolean,
 ): boolean;
 export function some<T extends PlainObject>(
   values: T,
   callbackfn: ObjectCallback<T[keyof T]>,
-  strict?: false,
-): boolean;
-export function some<T extends PlainObject>(
-  values: T,
-  callbackfn: ObjectCallback<T[keyof T]>,
-  strict: true,
+  strict?: boolean,
 ): boolean;
 
 export function some(values: unknown, predicateFn: Function, strict = true): boolean {
