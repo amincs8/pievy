@@ -4,3 +4,5 @@ export * from "./every";
 export * from "./every-async";
 export * from "./map";
 export * from "./map-async";
+export * from "./some";
+export * from "./some-async";
