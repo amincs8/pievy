@@ -1,10 +1,10 @@
 import {
   isAsyncIterable,
+  isBoolean,
   isFunction,
   isIterable,
   isPlainObject,
   isUndefined,
-  type Nullish,
   type PlainObject,
   type XOR,
 } from "@pievy/types";
@@ -17,111 +17,221 @@ interface PredicateArgsBase {
   values: unknown;
   predicateFn: Function;
   strict: boolean;
-  retuenValueInit: boolean;
 }
 
 interface PredicateArgsStopValue extends PredicateArgsBase {
+  retuenValueInit: boolean;
   stopValue: unknown;
 }
 
 interface PredicateArgsStop extends PredicateArgsBase {
   stop: {
     value: unknown;
-    truthLoop: Nullish<number>;
+    minMatches?: number;
+    maxMatches?: number;
   };
 }
 
-interface PredicateReturn {
-  returnValue?: boolean;
-  isInputValid: boolean;
+interface PredicateReturnInvalidInput {
+  isInputValid: false;
+}
+interface PredicateReturnStopValue {
+  returnValue: boolean;
+  isInputValid: true;
 }
 
-/**
- * Runs a predicate over each value in an iterable or plain object and tracks
- * whether iteration should halt early.
- *
- * The helper is shared by the collection predicates to centralize validation,
- * comparison logic, and early-stop handling while exposing a small result object
- * back to the public API.
- *
- * @param args - Collection input, predicate callback, and the stop condition to apply.
- * @returns The normalized validation state and the current accumulated boolean value.
- */
-export function _predicate(args: XOR<PredicateArgsStopValue, PredicateArgsStop>): PredicateReturn {
+interface PredicateReturnStop {
+  matchedCount: number;
+  returnValue: boolean;
+  isInputValid: true;
+}
+
+interface PredicateOnStopReturn {
+  matchedCount: number | undefined;
+  returnValue: boolean;
+  compareStopValue: unknown;
+  compareFn: ((a: unknown, b: unknown) => boolean) | undefined;
+  onStopFn: (() => void | typeof STOP) | undefined;
+  generateResult: () => XOR<PredicateReturnStopValue, PredicateReturnStop>;
+}
+
+function _isType(values: unknown, fns: Function[]) {
+  for (const fn of fns) {
+    if (fn(values)) return true;
+  }
+
+  return false;
+}
+
+function _isBetween({ value, min, max }: { value: number; min: number; max: number }) {
+  return min <= value && value <= max;
+}
+function _checkRange(min: number, max: number) {
+  return (
+    (Number.isInteger(max) || max === Infinity) &&
+    (Number.isInteger(min) || min === Infinity) &&
+    _isBetween({ max, min: 0, value: min })
+  );
+}
+
+function _createOnStop(
+  args: XOR<PredicateArgsStopValue, PredicateArgsStop>,
+  valuesCheckers: Function[],
+): XOR<PredicateOnStopReturn, PredicateReturnInvalidInput> {
+  const result: PredicateOnStopReturn = {
+    compareFn: undefined,
+    compareStopValue: undefined,
+    generateResult: function () {
+      return (
+        isUndefined(this.matchedCount)
+          ? { isInputValid: true, returnValue: this.returnValue }
+          : {
+              isInputValid: true,
+              matchedCount: this.matchedCount,
+              returnValue: this.returnValue,
+            }
+      ) as typeof args extends PredicateArgsStopValue
+        ? PredicateReturnStopValue
+        : PredicateReturnStop;
+    },
+    matchedCount: undefined,
+    onStopFn: undefined,
+    returnValue: false,
+  };
   const { values, predicateFn } = args;
 
-  if (!isFunction(predicateFn) || !(isIterable(values) || isPlainObject(values))) {
+  if (!isFunction(predicateFn) || !_isType(values, valuesCheckers)) {
     return { isInputValid: false };
   }
 
-  const { retuenValueInit, stopValue, stop, strict } = args;
-  let returnValue = retuenValueInit;
-  let fn: (value: unknown, index: PropertyKey, loopCount: number) => void | typeof STOP;
-  const compareFn: (a: unknown, b: unknown) => boolean =
-    strict === true ? (a, b) => a === b : (a, b) => a == b;
+  const { retuenValueInit = false, stopValue, stop, strict } = args;
+
+  result.returnValue = false;
+  result.matchedCount = undefined;
 
   if (!isUndefined(stopValue)) {
-    fn = (value, index, loopCount) => {
-      if (compareFn(predicateFn(value, index, loopCount), stopValue)) {
-        returnValue = false;
-        return STOP;
-      }
+    result.returnValue = retuenValueInit;
+    result.compareStopValue = stopValue;
+
+    result.onStopFn = () => {
+      result.returnValue = false;
+      return STOP;
     };
   } else if (!isUndefined(stop)) {
-    // TODO
+    const { minMatches = 0, maxMatches = Infinity } = stop;
+
+    if (!_checkRange(minMatches, maxMatches)) {
+      return { isInputValid: false };
+    }
+
+    result.matchedCount = 0;
+    result.compareStopValue = stop.value;
+
+    if (minMatches > 0) {
+      result.onStopFn = () => {
+        result.matchedCount!++;
+
+        if (_isBetween({ max: maxMatches, min: minMatches, value: result.matchedCount! })) {
+          result.returnValue = true;
+          return STOP;
+        }
+      };
+    } else {
+      result.returnValue = true;
+    }
   }
 
-  // TODO: USE fn INSTEAD OF fn!
-  if (isFunction(fn!)) {
-    forEach(values as XOR<Iterable<unknown>, PlainObject>, fn!);
-  }
+  result.compareFn = strict === true ? (a, b) => a === b : (a, b) => a == b;
 
-  return { isInputValid: true, returnValue };
+  return result;
 }
 
 /**
- * Asynchronously evaluates a predicate over each value in an async iterable,
- * iterable, or plain object while supporting early termination.
+ * Evaluates a predicate over an iterable or plain object until its configured
+ * stop condition is met.
  *
- * This internal helper mirrors the synchronous predicate pipeline but awaits the
- * callback result before comparing it against the configured stop value.
+ * The callback receives each value, its index or object key, and a zero-based
+ * iteration count. Callback results are compared with the configured stop value
+ * using strict equality when `strict` is `true`, and loose equality otherwise.
+ * Iteration stops at the first matching result in stop-value mode, or when the
+ * configured match-count stop condition is reached in match-count mode.
  *
- * @param args - Collection input, async predicate callback, and the stop condition to apply.
- * @returns A promise resolving to the validation state and current accumulated boolean value.
+ * @param args - Collection, callback, comparison mode, and either a stop value
+ *   with its initial return value or a stop value with a match-count range.
+ * @returns An invalid-input result when the collection, callback, or
+ *   match-count range is invalid. Otherwise, returns the accumulated boolean;
+ *   match-count mode also returns the number of matching callback results.
+ */
+export function _predicate(
+  args: XOR<PredicateArgsStopValue, PredicateArgsStop>,
+): XOR<
+  PredicateReturnInvalidInput,
+  typeof args extends PredicateArgsStopValue ? PredicateReturnStopValue : PredicateReturnStop
+> {
+  const onStop = _createOnStop(args, [isIterable, isPlainObject]);
+
+  if (isBoolean(onStop.isInputValid)) {
+    return { isInputValid: false };
+  }
+
+  if (isFunction(onStop.onStopFn)) {
+    const { values, predicateFn } = args;
+    forEach(values as XOR<Iterable<unknown>, PlainObject>, (value, index, loopCount) => {
+      if (onStop.compareFn!(predicateFn(value, index, loopCount), onStop.compareStopValue)) {
+        return onStop.onStopFn!();
+      }
+    });
+  }
+
+  return onStop.generateResult!();
+}
+
+/**
+ * Asynchronously evaluates a predicate over an async iterable, iterable, or
+ * plain object until its configured stop condition is met.
+ *
+ * The callback receives each value, its index or object key, and a zero-based
+ * iteration count. Callbacks are awaited sequentially, and each result is
+ * compared with the configured stop value using strict equality when `strict`
+ * is `true`, and loose equality otherwise. Iteration stops at the first
+ * matching result in stop-value mode, or when the requested match count is
+ * configured match-count stop condition is reached in match-count mode.
+ *
+ * @param args - Collection, callback, comparison mode, and either a stop value
+ *   with its initial return value or a stop value with a match-count range.
+ * @returns A promise resolving to an invalid-input result when the collection,
+ *   callback, or match-count range is invalid. Otherwise, it resolves to the
+ *   accumulated boolean; match-count mode also returns the number of matching
+ *   callback results.
  */
 export async function _predicateAsync(
   args: XOR<PredicateArgsStopValue, PredicateArgsStop>,
-): Promise<PredicateReturn> {
-  const { values, predicateFn } = args;
+): Promise<
+  XOR<
+    PredicateReturnInvalidInput,
+    typeof args extends PredicateArgsStopValue ? PredicateReturnStopValue : PredicateReturnStop
+  >
+> {
+  const onStop = _createOnStop(args, [isIterable, isPlainObject, isAsyncIterable]);
 
-  if (
-    !isFunction(predicateFn) ||
-    !(isAsyncIterable(values) || isIterable(values) || isPlainObject(values))
-  ) {
+  if (isBoolean(onStop.isInputValid)) {
     return { isInputValid: false };
   }
 
-  const { retuenValueInit, stopValue, stop, strict } = args;
-  let returnValue = retuenValueInit;
-  let fn: (value: unknown, index: PropertyKey, loopCount: number) => Promise<void | typeof STOP>;
-  const compareFn: (a: unknown, b: unknown) => boolean =
-    strict === true ? (a, b) => a === b : (a, b) => a == b;
+  if (isFunction(onStop.onStopFn)) {
+    const { values, predicateFn } = args;
 
-  if (!isUndefined(stopValue)) {
-    fn = async (value, index, loopCount) => {
-      if (compareFn(await predicateFn(value, index, loopCount), stopValue)) {
-        returnValue = false;
-        return STOP;
-      }
-    };
-  } else if (!isUndefined(stop)) {
-    // TODO
+    await forEachAsync(
+      values as XOR<Iterable<unknown>, PlainObject>,
+      async (value, index, loopCount) => {
+        if (
+          onStop.compareFn!(await predicateFn(value, index, loopCount), onStop.compareStopValue)
+        ) {
+          return onStop.onStopFn!();
+        }
+      },
+    );
   }
 
-  // TODO: USE fn INSTEAD OF fn!
-  if (isFunction(fn!)) {
-    await forEachAsync(values as XOR<Iterable<unknown>, PlainObject>, fn!);
-  }
-
-  return { isInputValid: true, returnValue };
+  return onStop.generateResult!();
 }
