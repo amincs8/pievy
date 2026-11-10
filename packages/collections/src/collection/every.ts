@@ -46,5 +46,13 @@ export function every<T extends PlainObject>(
 ): boolean;
 
 export function every(values: unknown, predicateFn: Function, strict = false): boolean {
-  return _predicate(values, predicateFn, strict, false);
+  const result = _predicate({
+    predicateFn,
+    retuenValueInit: true,
+    stopValue: false,
+    strict,
+    values,
+  });
+
+  return result.isInputValid === true && result.returnValue === true;
 }

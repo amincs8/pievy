@@ -48,4 +48,9 @@ describe("@pievy/collections: collection/every", () => {
     expect(every([0], () => 0, true)).toBe(true);
     expect(every([0], () => false, true)).toBe(false);
   });
+
+  it("shoult return false for input values and predicatefn", () => {
+    expect(every(12 as any, () => true)).toBe(false);
+    expect(every([1, 2, 3], null as any)).toBe(false);
+  });
 });

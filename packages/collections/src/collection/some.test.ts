@@ -49,4 +49,9 @@ describe("@pievy/collections: collection/some", () => {
     expect(some([0, 1, 0], (value) => value, true)).toBe(false);
     expect(some([0, 0], () => 1, true)).toBe(false);
   });
+
+  it("shoult return false for input values and predicatefn", () => {
+    expect(some(12 as any, () => true)).toBe(false);
+    expect(some([1, 2, 3], null as any)).toBe(false);
+  });
 });

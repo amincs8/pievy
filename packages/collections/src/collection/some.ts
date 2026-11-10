@@ -46,5 +46,13 @@ export function some<T extends PlainObject>(
 ): boolean;
 
 export function some(values: unknown, predicateFn: Function, strict = false): boolean {
-  return !_predicate(values, predicateFn, strict, true);
+  const result = _predicate({
+    predicateFn,
+    retuenValueInit: true,
+    stopValue: true,
+    strict,
+    values,
+  });
+
+  return result.isInputValid === true ? !result.returnValue : false;
 }
