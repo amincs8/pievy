@@ -7,3 +7,4 @@ export * from "./map-async";
 export * from "./some";
 export * from "./some-async";
 export * from "./none";
+export * from "./none-async";
