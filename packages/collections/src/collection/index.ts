@@ -10,3 +10,4 @@ export * from "./none";
 export * from "./none-async";
 export * from "./at-least";
 export * from "./at-least-async";
+export * from "./at-most";
