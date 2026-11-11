@@ -15,3 +15,4 @@ export * from "./at-most-async";
 export * from "./exactly";
 export * from "./exactly-async";
 export * from "./one";
+export * from "./one-async";
