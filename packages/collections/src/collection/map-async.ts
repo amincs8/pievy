@@ -22,7 +22,7 @@ type MappedObject<T, U> = {
  * result equal to {@link STOP} is included as a value and does not stop mapping.
  *
  * @param values - Async iterable, iterable, or plain object to map.
- * @param callbackfn - Asynchronous function that transforms each value.
+ * @param mapper - Asynchronous function that transforms each value.
  * @returns A promise for the mapped array or object.
  *
  * @example
@@ -32,27 +32,27 @@ type MappedObject<T, U> = {
  */
 export function mapAsync<T, U>(
   values: AsyncIterable<T>,
-  callbackfn: AsyncIterableCallback<T, U>,
+  mapper: AsyncIterableCallback<T, U>,
 ): Promise<U[]>;
 export function mapAsync<T, U>(
   values: Iterable<T>,
-  callbackfn: AsyncIterableCallback<T, U>,
+  mapper: AsyncIterableCallback<T, U>,
 ): Promise<U[]>;
 export function mapAsync<U, T extends PlainObject>(
   values: T,
-  callbackfn: AsyncObjectCallback<ObjectValue<T>, U>,
+  mapper: AsyncObjectCallback<ObjectValue<T>, U>,
 ): Promise<MappedObject<T, U>>;
 
 export async function mapAsync(
   values: unknown,
-  callbackfn: Function,
+  mapper: Function,
 ): Promise<unknown[] | Record<string, unknown>> {
-  if (!isFunction(callbackfn)) return [];
+  if (!isFunction(mapper)) return [];
 
   if (isAsyncIterable(values)) {
     const mappedValues: unknown[] = [];
     await forEachAsync(values, async (value, index, loopCount) => {
-      mappedValues.push(await callbackfn(value, index, loopCount));
+      mappedValues.push(await mapper(value, index, loopCount));
     });
     return mappedValues;
   }
@@ -60,7 +60,7 @@ export async function mapAsync(
   if (isIterable(values)) {
     const mappedValues: unknown[] = [];
     await forEachAsync(values, async (value, index, loopCount) => {
-      mappedValues.push(await callbackfn(value, index, loopCount));
+      mappedValues.push(await mapper(value, index, loopCount));
     });
     return mappedValues;
   }
@@ -68,7 +68,7 @@ export async function mapAsync(
   if (isPlainObject(values)) {
     const mappedValues: Record<string, unknown> = {};
     await forEachAsync(values, async (value, key, loopCount) => {
-      const mappedValue = await callbackfn(value, key, loopCount);
+      const mappedValue = await mapper(value, key, loopCount);
       if (key === "__proto__") {
         Object.defineProperty(mappedValues, key, {
           configurable: true,

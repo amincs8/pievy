@@ -16,7 +16,7 @@ type MappedObject<T, U> = {
  * return value is included in the result; returning {@link STOP} does not stop mapping.
  *
  * @param values - Iterable or plain object to map.
- * @param callbackfn - Function that transforms each value.
+ * @param mapper - Function that transforms each value.
  * @returns An array for iterable inputs, or an object with the original keys for plain objects.
  *
  * @example
@@ -25,19 +25,19 @@ type MappedObject<T, U> = {
  * map({ count: 2 }, (value) => value * 2); // { count: 4 }
  * ```
  */
-export function map<T, U>(values: Iterable<T>, callbackfn: IterableCallback<T, U>): U[];
+export function map<T, U>(values: Iterable<T>, mapper: IterableCallback<T, U>): U[];
 export function map<U, T extends PlainObject>(
   values: T,
-  callbackfn: ObjectCallback<ObjectValue<T>, U>,
+  mapper: ObjectCallback<ObjectValue<T>, U>,
 ): MappedObject<T, U>;
 
-export function map(values: unknown, callbackfn: Function): unknown[] | Record<string, unknown> {
-  if (!isFunction(callbackfn)) return [];
+export function map(values: unknown, mapper: Function): unknown[] | Record<string, unknown> {
+  if (!isFunction(mapper)) return [];
 
   if (isIterable(values)) {
     const result: unknown[] = [];
     forEach(values, (value, index, loopCount) => {
-      result.push(callbackfn(value, index, loopCount));
+      result.push(mapper(value, index, loopCount));
     });
     return result;
   }
@@ -45,7 +45,7 @@ export function map(values: unknown, callbackfn: Function): unknown[] | Record<s
   if (isPlainObject(values)) {
     const result: Record<string, unknown> = {};
     forEach(values, (value, key, loopCount) => {
-      const mappedValue = callbackfn(value, key, loopCount);
+      const mappedValue = mapper(value, key, loopCount);
       if (key === "__proto__") {
         Object.defineProperty(result, key, {
           configurable: true,
