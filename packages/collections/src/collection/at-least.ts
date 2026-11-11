@@ -43,7 +43,7 @@ export function atLeast(
   minMatches: number,
   strict = true,
 ): boolean {
-  const result = _predicate({
+  const { isInputValid, returnValue } = _predicate({
     predicateFn,
     stop: {
       minMatches,
@@ -53,5 +53,5 @@ export function atLeast(
     values,
   });
 
-  return result.isInputValid && result.returnValue!;
+  return isInputValid && returnValue!;
 }

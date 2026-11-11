@@ -44,7 +44,7 @@ export async function noneAsync(
   predicateFn: Function,
   strict = true,
 ): Promise<boolean> {
-  const result = await _predicateAsync({
+  const { isInputValid, returnValue } = await _predicateAsync({
     predicateFn,
     retuenValueInit: true,
     stopValue: true,
@@ -52,5 +52,5 @@ export async function noneAsync(
     values,
   });
 
-  return result.isInputValid === true && result.returnValue!;
+  return isInputValid === true && returnValue!;
 }

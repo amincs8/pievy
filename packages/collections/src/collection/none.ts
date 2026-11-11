@@ -36,7 +36,7 @@ export function none<T extends PlainObject>(
 ): boolean;
 
 export function none(values: unknown, predicateFn: Function, strict = true): boolean {
-  const result = _predicate({
+  const { isInputValid, returnValue } = _predicate({
     predicateFn,
     retuenValueInit: true,
     stopValue: true,
@@ -44,5 +44,5 @@ export function none(values: unknown, predicateFn: Function, strict = true): boo
     values,
   });
 
-  return result.isInputValid === true && result.returnValue!;
+  return isInputValid === true && returnValue!;
 }

@@ -37,7 +37,7 @@ export function every<T extends PlainObject>(
 ): boolean;
 
 export function every(values: unknown, predicateFn: Function, strict = true): boolean {
-  const result = _predicate({
+  const { isInputValid, returnValue } = _predicate({
     predicateFn,
     retuenValueInit: true,
     stopValue: false,
@@ -45,5 +45,5 @@ export function every(values: unknown, predicateFn: Function, strict = true): bo
     values,
   });
 
-  return result.isInputValid === true && result.returnValue!;
+  return isInputValid === true && returnValue!;
 }
