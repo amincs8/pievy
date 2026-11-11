@@ -16,3 +16,5 @@ export * from "./exactly";
 export * from "./exactly-async";
 export * from "./one";
 export * from "./one-async";
+export * from "./count";
+export * from "./count-async";
