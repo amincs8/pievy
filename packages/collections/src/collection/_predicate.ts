@@ -27,8 +27,7 @@ interface PredicateArgsStopValue extends PredicateArgsBase {
 interface PredicateArgsStop extends PredicateArgsBase {
   stop: {
     value: unknown;
-    minMatches?: number;
-    maxMatches?: number;
+    minMatches: number;
   };
 }
 
@@ -61,17 +60,6 @@ function _isType(values: unknown, fns: Function[]) {
   }
 
   return false;
-}
-
-function _isBetween({ value, min, max }: { value: number; min: number; max: number }) {
-  return min <= value && value <= max;
-}
-function _checkRange(min: number, max: number) {
-  return (
-    (Number.isInteger(max) || max === Infinity) &&
-    (Number.isInteger(min) || min === Infinity) &&
-    _isBetween({ max, min: 0, value: min })
-  );
 }
 
 function _createOnStop(
@@ -118,9 +106,9 @@ function _createOnStop(
       return STOP;
     };
   } else if (!isUndefined(stop)) {
-    const { minMatches = 0, maxMatches = Infinity } = stop;
+    const { minMatches } = stop;
 
-    if (!_checkRange(minMatches, maxMatches)) {
+    if (!((Number.isInteger(minMatches) || minMatches === Infinity) && minMatches >= 0)) {
       return { isInputValid: false };
     }
 
@@ -131,7 +119,7 @@ function _createOnStop(
       result.onStopFn = () => {
         result.matchedCount!++;
 
-        if (_isBetween({ max: maxMatches, min: minMatches, value: result.matchedCount! })) {
+        if (result.matchedCount! >= minMatches) {
           result.returnValue = true;
           return STOP;
         }
