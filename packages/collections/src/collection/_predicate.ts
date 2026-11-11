@@ -10,14 +10,14 @@ import {
 } from "@pievy/types";
 
 import { STOP } from "../consts";
+import {
+  _compareFn,
+  _isTypeOf,
+  type PredicateArgsBase,
+  type PredicateReturnInvalidInput,
+} from "./_internal";
 import { forEach } from "./for-each";
 import { forEachAsync } from "./for-each-async";
-
-interface PredicateArgsBase {
-  values: unknown;
-  predicateFn: Function;
-  strict: boolean;
-}
 
 interface PredicateArgsStopValue extends PredicateArgsBase {
   retuenValueInit: boolean;
@@ -31,9 +31,6 @@ interface PredicateArgsStop extends PredicateArgsBase {
   };
 }
 
-interface PredicateReturnInvalidInput {
-  isInputValid: false;
-}
 interface PredicateReturnStopValue {
   returnValue: boolean;
   isInputValid: true;
@@ -45,31 +42,25 @@ interface PredicateReturnStop {
   isInputValid: true;
 }
 
-interface PredicateOnStopReturn {
+interface StateReturn {
   matchedCount: number | undefined;
   returnValue: boolean;
   compareStopValue: unknown;
-  compareFn: ((a: unknown, b: unknown) => boolean) | undefined;
-  onStopFn: (() => void | typeof STOP) | undefined;
-  generateResult: () => XOR<PredicateReturnStopValue, PredicateReturnStop>;
+  compareFn: ReturnType<typeof _compareFn> | undefined;
+  getStopSignal: (() => void | typeof STOP) | undefined;
+  result: () => XOR<PredicateReturnStopValue, PredicateReturnStop>;
 }
 
-function _isType(values: unknown, fns: Function[]) {
-  for (const fn of fns) {
-    if (fn(values)) return true;
-  }
-
-  return false;
-}
-
-function _createOnStop(
+function _createState(
   args: XOR<PredicateArgsStopValue, PredicateArgsStop>,
   valuesCheckers: Function[],
-): XOR<PredicateOnStopReturn, PredicateReturnInvalidInput> {
-  const result: PredicateOnStopReturn = {
+): XOR<StateReturn, PredicateReturnInvalidInput> {
+  const result: StateReturn = {
     compareFn: undefined,
     compareStopValue: undefined,
-    generateResult: function () {
+    getStopSignal: undefined,
+    matchedCount: undefined,
+    result: function () {
       return (
         isUndefined(this.matchedCount)
           ? { isInputValid: true, returnValue: this.returnValue }
@@ -82,13 +73,11 @@ function _createOnStop(
         ? PredicateReturnStopValue
         : PredicateReturnStop;
     },
-    matchedCount: undefined,
-    onStopFn: undefined,
     returnValue: false,
   };
   const { values, predicateFn } = args;
 
-  if (!isFunction(predicateFn) || !_isType(values, valuesCheckers)) {
+  if (!isFunction(predicateFn) || !_isTypeOf(values, valuesCheckers)) {
     return { isInputValid: false };
   }
 
@@ -101,7 +90,7 @@ function _createOnStop(
     result.returnValue = retuenValueInit;
     result.compareStopValue = stopValue;
 
-    result.onStopFn = () => {
+    result.getStopSignal = () => {
       result.returnValue = false;
       return STOP;
     };
@@ -116,7 +105,7 @@ function _createOnStop(
     result.compareStopValue = stop.value;
 
     if (minMatches > 0) {
-      result.onStopFn = () => {
+      result.getStopSignal = () => {
         result.matchedCount!++;
 
         if (result.matchedCount! >= minMatches) {
@@ -129,7 +118,7 @@ function _createOnStop(
     }
   }
 
-  result.compareFn = strict === true ? (a, b) => a === b : (a, b) => a == b;
+  result.compareFn = _compareFn(strict);
 
   return result;
 }
@@ -156,22 +145,22 @@ export function _predicate(
   PredicateReturnInvalidInput,
   typeof args extends PredicateArgsStopValue ? PredicateReturnStopValue : PredicateReturnStop
 > {
-  const onStop = _createOnStop(args, [isIterable, isPlainObject]);
+  const state = _createState(args, [isIterable, isPlainObject]);
 
-  if (isBoolean(onStop.isInputValid)) {
+  if (isBoolean(state.isInputValid)) {
     return { isInputValid: false };
   }
 
-  if (isFunction(onStop.onStopFn)) {
+  if (isFunction(state.getStopSignal)) {
     const { values, predicateFn } = args;
     forEach(values as XOR<Iterable<unknown>, PlainObject>, (value, index, loopCount) => {
-      if (onStop.compareFn!(predicateFn(value, index, loopCount), onStop.compareStopValue)) {
-        return onStop.onStopFn!();
+      if (state.compareFn!(predicateFn(value, index, loopCount), state.compareStopValue)) {
+        return state.getStopSignal!();
       }
     });
   }
 
-  return onStop.generateResult!();
+  return state.result!();
 }
 
 /**
@@ -200,26 +189,24 @@ export async function _predicateAsync(
     typeof args extends PredicateArgsStopValue ? PredicateReturnStopValue : PredicateReturnStop
   >
 > {
-  const onStop = _createOnStop(args, [isIterable, isPlainObject, isAsyncIterable]);
+  const state = _createState(args, [isIterable, isPlainObject, isAsyncIterable]);
 
-  if (isBoolean(onStop.isInputValid)) {
+  if (isBoolean(state.isInputValid)) {
     return { isInputValid: false };
   }
 
-  if (isFunction(onStop.onStopFn)) {
+  if (isFunction(state.getStopSignal)) {
     const { values, predicateFn } = args;
 
     await forEachAsync(
       values as XOR<Iterable<unknown>, PlainObject>,
       async (value, index, loopCount) => {
-        if (
-          onStop.compareFn!(await predicateFn(value, index, loopCount), onStop.compareStopValue)
-        ) {
-          return onStop.onStopFn!();
+        if (state.compareFn!(await predicateFn(value, index, loopCount), state.compareStopValue)) {
+          return state.getStopSignal!();
         }
       },
     );
   }
 
-  return onStop.generateResult!();
+  return state.result!();
 }
