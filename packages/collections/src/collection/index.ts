@@ -19,4 +19,5 @@ export * from "./one-async";
 export * from "./count";
 export * from "./count-async";
 export * from "./find";
-export * from "./find-async";
+export * from "./find-n";
+export * from "./find-n-async";
