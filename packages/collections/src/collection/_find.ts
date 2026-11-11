@@ -20,7 +20,7 @@ import { forEach } from "./for-each";
 import { forEachAsync } from "./for-each-async";
 
 interface FindArgs extends PredicateArgsBase {
-  firstN?: number;
+  maxMatches?: number;
 }
 
 enum StopFnType {
@@ -55,7 +55,7 @@ function _createState(
     return { isInputValid: false };
   }
 
-  const { firstN, strict } = args;
+  const { maxMatches: firstN, strict } = args;
   let stopFnType: StopFnType = StopFnType.none;
 
   if (isUndefined(firstN)) {
