@@ -13,7 +13,7 @@ import { _find } from "./_find";
  *
  * @typeParam T - The type of values in the collection.
  * @param values - Iterable or plain object whose values are tested.
- * @param callbackfn - Predicate called with each value, its index or key, and the loop count.
+ * @param predicateFn - Predicate called with each value, its index or key, and the loop count.
  * @param strict - When `true`, only a literal `true` result matches; defaults to `true`.
  * @returns An array of values for which the predicate matches, or an empty array
  *   for invalid inputs.
@@ -26,13 +26,13 @@ import { _find } from "./_find";
  */
 export function find<T>(
   values: Iterable<T>,
-  callbackfn: IterableCallback<T>,
+  predicateFn: IterableCallback<T>,
   strict?: boolean,
 ): T[];
 
 export function find<T extends PlainObject>(
   values: T,
-  callbackfn: ObjectCallback<T[keyof T]>,
+  predicateFn: ObjectCallback<T[keyof T]>,
   strict?: boolean,
 ): T[];
 
