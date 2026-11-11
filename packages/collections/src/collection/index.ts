@@ -12,3 +12,4 @@ export * from "./at-least";
 export * from "./at-least-async";
 export * from "./at-most";
 export * from "./at-most-async";
+export * from "./exactly";
