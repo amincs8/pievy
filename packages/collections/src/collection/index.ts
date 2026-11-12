@@ -21,6 +21,7 @@ export * from "./count-async";
 export * from "./reduce";
 export * from "./reduce-async";
 export * from "./find";
+export * from "./find-async";
 export * from "./find-n";
 export * from "./find-n-async";
 export * from "./group-by";
