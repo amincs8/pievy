@@ -1,46 +1,47 @@
 import { isArray, type Maybe } from "@pievy/types";
 
-const KEY = "length";
-type IndexOptionType = number | typeof KEY;
 interface IndexOptions {
-  initValue: IndexOptionType;
-  minValue: IndexOptionType;
-  maxValue: IndexOptionType;
+  initValue: number;
+  minValue: number;
+  maxValue: number;
   step: -1 | 1;
-}
-
-function _checkIndexOption(value: IndexOptionType): boolean {
-  return Number.isInteger(value) ? (value as number) >= 0 : value === KEY;
+  includeMax?: boolean;
 }
 
 export function _createIterable<T>(
   values: T[],
-  { initValue, minValue, maxValue, step }: IndexOptions,
+  { initValue, minValue, maxValue, step, includeMax = true }: IndexOptions,
 ): Iterable<T> {
   if (!isArray(values)) throw new TypeError("'values' must be a array");
   if (
     !(
-      _checkIndexOption(initValue) &&
-      _checkIndexOption(minValue) &&
-      _checkIndexOption(maxValue) &&
+      Number.isInteger(initValue) &&
+      Number.isInteger(minValue) &&
+      Number.isInteger(maxValue) &&
       (step === -1 || step === 1)
     )
   ) {
-    throw new TypeError(`index values must be a integer or '${KEY}'`);
+    throw new TypeError(`index values must be a integer`);
   }
 
   return {
     [Symbol.iterator]() {
       let index: Maybe<number>;
-      const initValueFn = initValue === KEY ? () => values.length : () => initValue;
-      const minValueFn = minValue === KEY ? () => values.length : () => minValue;
-      const maxValueFn = maxValue === KEY ? () => values.length : () => maxValue;
+      const initValueFn = initValue < 0 ? () => values.length + initValue : () => initValue;
+      const minValueFn =
+        minValue < 0 ? () => Math.max(0, values.length + minValue) : () => minValue;
+      const maxValueFn =
+        maxValue < 0
+          ? maxValue === -1 || includeMax
+            ? () => Math.max(0, values.length + maxValue)
+            : () => Math.max(0, values.length + maxValue - 1)
+          : () => maxValue + (includeMax ? 0 : -1);
 
       return {
         next() {
-          index = (index === undefined ? initValueFn() : index) + step;
+          index = index === undefined ? initValueFn() : index + step;
 
-          if (index >= minValueFn() && index < maxValueFn()) {
+          if (index >= minValueFn() && index <= maxValueFn()) {
             return { done: false, value: values[index] };
           }
           return { done: true, value: undefined };

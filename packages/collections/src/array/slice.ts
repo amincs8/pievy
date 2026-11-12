@@ -20,6 +20,7 @@ import { _createIterable } from "./_internal";
  */
 export function slice<T>(values: T[], start: number, end?: number): Iterable<T> {
   return _createIterable(values, {
+    includeMax: false,
     initValue: start,
     maxValue: end ?? -1,
     minValue: start,

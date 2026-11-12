@@ -17,8 +17,8 @@ import { _createIterable } from "./_internal";
  */
 export function reverse<T>(values: T[]): Iterable<T> {
   return _createIterable(values, {
-    initValue: "length",
-    maxValue: "length",
+    initValue: -1,
+    maxValue: -1,
     minValue: 0,
     step: -1,
   });
