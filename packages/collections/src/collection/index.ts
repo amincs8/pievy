@@ -23,3 +23,5 @@ export * from "./reduce-async";
 export * from "./find";
 export * from "./find-n";
 export * from "./find-n-async";
+export * from "./group-by";
+export * from "./group-by-async";

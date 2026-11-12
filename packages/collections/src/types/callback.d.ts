@@ -133,3 +133,5 @@ export type AsyncReducerObjectCallback<T, Return = unknown> = (
   key: string,
   loopCount: number,
 ) => Promise<Return>;
+
+export type Grouped<T> = Record<PropertyKey, T[]>;
