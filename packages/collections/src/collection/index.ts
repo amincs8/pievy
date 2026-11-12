@@ -18,6 +18,8 @@ export * from "./one";
 export * from "./one-async";
 export * from "./count";
 export * from "./count-async";
+export * from "./reduce";
+export * from "./reduce-async";
 export * from "./find";
 export * from "./find-n";
 export * from "./find-n-async";
