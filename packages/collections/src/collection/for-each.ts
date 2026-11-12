@@ -42,8 +42,7 @@ export function forEach(values: unknown, callbackfn: Function): void {
     for (const key in values) {
       if (!Object.prototype.hasOwnProperty.call(values, key)) continue;
 
-      const value = (values as Record<string, unknown>)[key];
-      if (callbackfn(value, key, loopCount) === STOP) {
+      if (callbackfn((values as Record<string, unknown>)[key], key, loopCount) === STOP) {
         break;
       }
       loopCount++;
