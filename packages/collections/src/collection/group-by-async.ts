@@ -7,6 +7,7 @@ import {
 } from "@pievy/types";
 
 import type { AsyncIterableCallback, AsyncObjectCallback, Grouped } from "../types";
+import { hasOwn } from "../object";
 
 /**
  * Asynchronously groups values by a key resolved from each item.
@@ -67,7 +68,7 @@ export async function groupByAsync(
     }
   } else if (isPlainObject(values)) {
     for (const key in values) {
-      if (!Object.prototype.hasOwnProperty.call(values, key)) continue;
+      if (!hasOwn(values, key)) continue;
 
       await add((values as Record<string, unknown>)[key], key, loopCount);
       loopCount++;

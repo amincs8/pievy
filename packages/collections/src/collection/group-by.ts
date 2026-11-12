@@ -1,6 +1,7 @@
 import { isFunction, isIterable, isPlainObject, type PlainObject } from "@pievy/types";
 
 import type { Grouped, IterableCallback, ObjectCallback } from "../types";
+import { hasOwn } from "../object";
 
 /**
  * Groups values by a key resolved from each item.
@@ -47,7 +48,7 @@ export function groupBy(values: unknown, callbackfn: Function): Grouped<unknown>
     }
   } else if (isPlainObject(values)) {
     for (const key in values) {
-      if (!Object.prototype.hasOwnProperty.call(values, key)) continue;
+      if (!hasOwn(values, key)) continue;
 
       add((values as Record<string, unknown>)[key], key, loopCount);
       loopCount++;

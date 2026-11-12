@@ -1,6 +1,7 @@
 import { isFunction, isIterable, isPlainObject, type PlainObject } from "@pievy/types";
 
 import type { ReducerIterableCallback, ReducerObjectCallback } from "../types";
+import { hasOwn } from "../object";
 
 /**
  * Reduces an iterable or plain object to a single accumulated value.
@@ -46,7 +47,7 @@ export function reduce(values: unknown, reducer: Function, accumulator: unknown)
     }
   } else if (isPlainObject(values)) {
     for (const key in values) {
-      if (!Object.prototype.hasOwnProperty.call(values, key)) continue;
+      if (!hasOwn(values, key)) continue;
 
       result = reducer(result, (values as Record<string, unknown>)[key], key, loopCount);
       loopCount++;

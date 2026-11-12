@@ -2,6 +2,7 @@ import { isFunction, isIterable, isPlainObject, type PlainObject } from "@pievy/
 
 import { STOP, type LoopControl } from "../consts";
 import type { IterableCallback, ObjectCallback } from "../types";
+import { hasOwn } from "../object";
 
 /**
  * Calls a callback for each value in an iterable or each own enumerable value in a plain object.
@@ -40,7 +41,7 @@ export function forEach(values: unknown, callbackfn: Function): void {
     }
   } else if (isPlainObject(values)) {
     for (const key in values) {
-      if (!Object.prototype.hasOwnProperty.call(values, key)) continue;
+      if (!hasOwn(values, key)) continue;
 
       if (callbackfn((values as Record<string, unknown>)[key], key, loopCount) === STOP) {
         break;

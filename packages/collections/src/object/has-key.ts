@@ -2,6 +2,7 @@ import { isArray, isObject, isString } from "@pievy/types";
 
 import type { DotPath } from "../types";
 import { _pathToArray } from "./_internal";
+import { hasOwn } from "./has-own";
 
 /**
  * Checks whether an object contains a nested property path.
@@ -42,7 +43,7 @@ export function hasKey(obj: object, path: string | DotPath | PropertyKey[]): boo
         break;
       }
 
-      if (Object.prototype.hasOwnProperty.call(currentObj, key)) {
+      if (hasOwn(currentObj, key as keyof typeof currentObj)) {
         result = true;
         currentObj = currentObj[key as keyof typeof currentObj];
       } else {

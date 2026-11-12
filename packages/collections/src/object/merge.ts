@@ -1,4 +1,5 @@
 import { isPlainObject, isUndefined, type PlainObject } from "@pievy/types";
+import { hasOwn } from "./has-own";
 
 /**
  * Merges default values with override values using a deep plain-object merge.
@@ -47,7 +48,7 @@ export function merge<D extends PlainObject, O extends PlainObject>(
   }
 
   for (const key in overrides) {
-    if (!Object.prototype.hasOwnProperty.call(result, key)) {
+    if (!hasOwn(result, key)) {
       result[key] = overrides[key];
     }
   }

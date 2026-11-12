@@ -8,6 +8,7 @@ import {
 
 import { STOP, type LoopControl } from "../consts";
 import type { AsyncIterableCallback, AsyncObjectCallback } from "../types";
+import { hasOwn } from "../object";
 
 /**
  * Awaits a callback for each value in an async iterable, iterable, or plain object.
@@ -58,7 +59,7 @@ export async function forEachAsync(values: unknown, callbackfn: Function): Promi
     }
   } else if (isPlainObject(values)) {
     for (const key in values) {
-      if (!Object.prototype.hasOwnProperty.call(values, key)) continue;
+      if (!hasOwn(values, key)) continue;
 
       if ((await callbackfn((values as Record<string, unknown>)[key], key, loopCount)) === STOP)
         break;
