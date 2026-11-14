@@ -1,3 +1,4 @@
+import type { IterableWithLength } from "../types/iterable";
 import { _createIterable } from "./_internal";
 
 /**
@@ -15,7 +16,7 @@ import { _createIterable } from "./_internal";
  * [...values]; // [3, 2, 1]
  * ```
  */
-export function reverse<T>(values: T[]): Iterable<T> {
+export function reverse<T>(values: T[]): IterableWithLength<T> {
   return _createIterable(values, {
     initValue: -1,
     maxValue: -1,

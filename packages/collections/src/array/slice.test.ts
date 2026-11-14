@@ -26,6 +26,12 @@ describe("@pievy/collections: array/slice", () => {
     expect(values).toEqual(["x", "y", "z"]);
   });
 
+  it("should report the correct number of values in the iterable", () => {
+    expect(slice([10, 20, 30, 40, 50], 1, 4).length).toBe(3);
+    expect(slice([1, 2, 3, 4, 5], 1, -2).length).toBe(2);
+    expect(slice([], 0, 0).length).toBe(0);
+  });
+
   it("should throw a TypeError for invalid input", () => {
     expect(() => slice(null as any, 0)).toThrow(TypeError);
     expect(() => slice([1, 2, 3], 0, 1.5)).toThrow(TypeError);

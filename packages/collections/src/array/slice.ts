@@ -1,3 +1,4 @@
+import type { IterableWithLength } from "../types/iterable";
 import { _createIterable } from "./_internal";
 
 /**
@@ -18,7 +19,7 @@ import { _createIterable } from "./_internal";
  * [...slice(values, 1, -2)]; // [2, 3]
  * ```
  */
-export function slice<T>(values: T[], start: number, end?: number): Iterable<T> {
+export function slice<T>(values: T[], start: number, end?: number): IterableWithLength<T> {
   return _createIterable(values, {
     includeMax: false,
     initValue: start,
