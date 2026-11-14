@@ -1,1 +1,1 @@
-export type DotPath = `.${string}` | `.${string}${DotPath}`;
+export type DotPath = `.${string}`;
