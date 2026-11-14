@@ -6,6 +6,24 @@ export type XOR<T, U> =
   | (U & { [K in Exclude<keyof T, keyof U>]?: never });
 
 /**
+ * Creates a union of object types where keys unique to the other variants are
+ * forbidden.
+ *
+ * @typeParam T - A tuple or array of mutually exclusive object types.
+ *
+ * @example
+ * ```ts
+ * type Source = XORMany<[{ file: string }, { url: string }]>;
+ *
+ * const source: Source = { file: "data.json" };
+ * ```
+ */
+export type XORMany<T extends object[]> = {
+  [K in keyof T]: T[K] &
+    Partial<Record<Exclude<keyof UnionToIntersection<T[number]>, keyof T[K]>, never>>;
+}[number];
+
+/**
  * Recursively makes all properties of a value readonly.
  */
 export type DeepReadonly<T> = T extends (...args: any[]) => any
