@@ -8,3 +8,4 @@ export * from "./dot-case";
 export * from "./path-case";
 export * from "./sentence-case";
 export * from "./title-case";
+export * from "./swap-case";
