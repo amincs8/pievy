@@ -2,7 +2,11 @@ export default {
   extends: ["@commitlint/config-conventional"],
   rules: {
     "scope-empty": [2, "never"],
-    "scope-enum": [2, "always", ["repo", "repo-internal", "types", "collections", "strings"]],
+    "scope-enum": [
+      2,
+      "always",
+      ["repo", "repo-internal", "types", "collections", "strings", "functions"],
+    ],
     "subject-empty": [2, "never"],
   },
 };
