@@ -1,4 +1,4 @@
-import { splitWordsPrepare } from "../split-words";
+import { _separatorCase } from "./_internal";
 
 /**
  * Converts a string to kebab case.
@@ -18,7 +18,5 @@ import { splitWordsPrepare } from "../split-words";
  * @public
  */
 export function kebabCase(value: string): string {
-  return splitWordsPrepare(value)
-    .toLowerCase()
-    .replace(/\p{Z}+/gu, "-");
+  return _separatorCase(value, "-", String.prototype.toLowerCase);
 }

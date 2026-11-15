@@ -1,4 +1,4 @@
-import { splitWordsPrepare } from "../split-words";
+import { _joinedCaase } from "./_internal";
 
 /**
  * Converts a string to Pascal case.
@@ -18,8 +18,10 @@ import { splitWordsPrepare } from "../split-words";
  * @public
  */
 export function pascalCase(value: string): string {
-  return splitWordsPrepare(value)
-    .toLowerCase()
-    .replace(/\p{Z}+(\p{L})?/gu, (_, match: string) => (match ? match.toUpperCase() : ""))
-    .replace(/^(.)/, (m) => m.toUpperCase());
+  return _joinedCaase(
+    value,
+    String.prototype.toLowerCase,
+    (str) => str.toUpperCase(),
+    (str) => str.toUpperCase(),
+  );
 }

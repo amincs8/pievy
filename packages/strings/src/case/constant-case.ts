@@ -1,4 +1,4 @@
-import { splitWordsPrepare } from "../split-words";
+import { _separatorCase } from "./_internal";
 
 /**
  * Converts a string to CONSTANT case.
@@ -18,7 +18,5 @@ import { splitWordsPrepare } from "../split-words";
  * @public
  */
 export function constantCase(value: string): string {
-  return splitWordsPrepare(value)
-    .toUpperCase()
-    .replace(/\p{Z}+/gu, "_");
+  return _separatorCase(value, "_", String.prototype.toUpperCase);
 }
