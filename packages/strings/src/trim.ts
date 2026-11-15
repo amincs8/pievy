@@ -1,6 +1,6 @@
 import { isNonEmptyString } from "@pievy/types";
 
-import { escapeRegExp } from "./escape";
+import { escapeRegExp } from "./formatting";
 
 const _DEFAULT_TRIM = "[\\p{Z}\\s]";
 
