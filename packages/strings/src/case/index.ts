@@ -5,3 +5,4 @@ export * from "./kebab-case";
 export * from "./constant-case";
 export * from "./train-case";
 export * from "./dot-case";
+export * from "./path-case";
