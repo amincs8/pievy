@@ -26,6 +26,10 @@
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest"
   },
+  "dependencies": {
+    "@pievy/types": "workspace:*",
+    "@pievy/collections": "workspace:*"
+  },
   "devDependencies": {
     "unplugin-dts": "^1.1.2",
     "vite": "^8.3.5",
