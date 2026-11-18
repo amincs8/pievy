@@ -4,3 +4,4 @@ export * from "./some-pass";
 export * from "./some-pass-async";
 export * from "./tap";
 export * from "./tap-async";
+export * from "./pipe";
