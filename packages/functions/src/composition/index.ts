@@ -5,3 +5,4 @@ export * from "./some-pass-async";
 export * from "./tap";
 export * from "./tap-async";
 export * from "./pipe";
+export * from "./pipe-async";
