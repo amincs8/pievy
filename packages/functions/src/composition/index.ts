@@ -10,3 +10,5 @@ export * from "./pipe";
 export * from "./pipe-async";
 export * from "./compose";
 export * from "./compose-async";
+export * from "./juxt";
+export * from "./juxt-async";
