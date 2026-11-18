@@ -1,3 +1,5 @@
+export * from "./converge";
+export * from "./converge-async";
 export * from "./every-pass";
 export * from "./every-pass-async";
 export * from "./some-pass";
@@ -6,3 +8,5 @@ export * from "./tap";
 export * from "./tap-async";
 export * from "./pipe";
 export * from "./pipe-async";
+export * from "./compose";
+export * from "./compose-async";
