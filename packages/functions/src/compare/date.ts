@@ -1,3 +1,5 @@
+import { _isEqualDate } from "./_internal";
+
 /**
  * Checks whether two values are equal `Date` instances.
  *
@@ -9,10 +11,6 @@
  * @returns `true` when both are `Date` instances with equal timestamps.
  * @public
  */
-export function _isEqualDate(left: Date, right: Date): boolean {
-  return left.getTime() === right.getTime();
-}
-
 export function isEqualDate(left: Date, right: Date): boolean {
   return left instanceof Date && right instanceof Date && _isEqualDate(left, right);
 }

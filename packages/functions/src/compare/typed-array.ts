@@ -1,24 +1,4 @@
-/**
- * Compares two typed arrays element-by-element.
- *
- * @param left - The first typed array.
- * @param right - The second typed array.
- * @returns `true` when both have the same length and equal elements.
- * @internal
- */
-export function _isEqualTypedArray<T extends { length: number; [index: number]: number | bigint }>(
-  left: T,
-  right: T,
-): boolean {
-  if (left.length !== right.length) {
-    return false;
-  }
-
-  for (let index = 0; index < left.length; ++index) {
-    if (left[index] !== right[index]) return false;
-  }
-  return true;
-}
+import { _isEqualTypedArray } from "./_internal";
 
 /**
  * Checks whether two values are equal `Int8Array` instances.

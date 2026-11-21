@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  _isEqualTypedArray,
   isEqualBigInt64Array,
   isEqualBigUint64Array,
   isEqualFloat32Array,
@@ -16,12 +15,6 @@ import {
 } from "./typed-array";
 
 describe("@pievy/functions: typed arrays", () => {
-  it("_isEqualTypedArray should compare element-wise", () => {
-    expect(_isEqualTypedArray({ 0: 1, 1: 2, 2: 3, length: 3 }, { 0: 1, 1: 2, 2: 3, length: 3 })).toBe(true);
-    expect(_isEqualTypedArray({ 0: 1, 1: 2, 2: 3, length: 3 }, { 0: 1, 1: 2, 2: 4, length: 3 })).toBe(false);
-    expect(_isEqualTypedArray({ 0: 1, 1: 2, length: 2 }, { 0: 1, 1: 2, 2: 3, length: 3 })).toBe(false);
-  });
-
   it("isEqualInt8Array", () => {
     expect(isEqualInt8Array(new Int8Array([1, 2, 3]), new Int8Array([1, 2, 3]))).toBe(true);
     expect(isEqualInt8Array(new Int8Array([1, 2, 3]), new Int8Array([1, 2, 4]))).toBe(false);
@@ -35,8 +28,12 @@ describe("@pievy/functions: typed arrays", () => {
   });
 
   it("isEqualUint8ClampedArray", () => {
-    expect(isEqualUint8ClampedArray(new Uint8ClampedArray([1, 2, 3]), new Uint8ClampedArray([1, 2, 3]))).toBe(true);
-    expect(isEqualUint8ClampedArray(new Uint8ClampedArray([1, 2, 3]), new Uint8ClampedArray([1, 2, 4]))).toBe(false);
+    expect(
+      isEqualUint8ClampedArray(new Uint8ClampedArray([1, 2, 3]), new Uint8ClampedArray([1, 2, 3])),
+    ).toBe(true);
+    expect(
+      isEqualUint8ClampedArray(new Uint8ClampedArray([1, 2, 3]), new Uint8ClampedArray([1, 2, 4])),
+    ).toBe(false);
   });
 
   it("isEqualInt16Array", () => {
@@ -60,22 +57,38 @@ describe("@pievy/functions: typed arrays", () => {
   });
 
   it("isEqualFloat32Array", () => {
-    expect(isEqualFloat32Array(new Float32Array([1.5, 2.5]), new Float32Array([1.5, 2.5]))).toBe(true);
-    expect(isEqualFloat32Array(new Float32Array([1.5, 2.5]), new Float32Array([1.5, 2.6]))).toBe(false);
+    expect(isEqualFloat32Array(new Float32Array([1.5, 2.5]), new Float32Array([1.5, 2.5]))).toBe(
+      true,
+    );
+    expect(isEqualFloat32Array(new Float32Array([1.5, 2.5]), new Float32Array([1.5, 2.6]))).toBe(
+      false,
+    );
   });
 
   it("isEqualFloat64Array", () => {
-    expect(isEqualFloat64Array(new Float64Array([1.5, 2.5]), new Float64Array([1.5, 2.5]))).toBe(true);
-    expect(isEqualFloat64Array(new Float64Array([1.5, 2.5]), new Float64Array([1.5, 2.6]))).toBe(false);
+    expect(isEqualFloat64Array(new Float64Array([1.5, 2.5]), new Float64Array([1.5, 2.5]))).toBe(
+      true,
+    );
+    expect(isEqualFloat64Array(new Float64Array([1.5, 2.5]), new Float64Array([1.5, 2.6]))).toBe(
+      false,
+    );
   });
 
   it("isEqualBigInt64Array", () => {
-    expect(isEqualBigInt64Array(new BigInt64Array([1n, 2n, 3n]), new BigInt64Array([1n, 2n, 3n]))).toBe(true);
-    expect(isEqualBigInt64Array(new BigInt64Array([1n, 2n, 3n]), new BigInt64Array([1n, 2n, 4n]))).toBe(false);
+    expect(
+      isEqualBigInt64Array(new BigInt64Array([1n, 2n, 3n]), new BigInt64Array([1n, 2n, 3n])),
+    ).toBe(true);
+    expect(
+      isEqualBigInt64Array(new BigInt64Array([1n, 2n, 3n]), new BigInt64Array([1n, 2n, 4n])),
+    ).toBe(false);
   });
 
   it("isEqualBigUint64Array", () => {
-    expect(isEqualBigUint64Array(new BigUint64Array([1n, 2n, 3n]), new BigUint64Array([1n, 2n, 3n]))).toBe(true);
-    expect(isEqualBigUint64Array(new BigUint64Array([1n, 2n, 3n]), new BigUint64Array([1n, 2n, 4n]))).toBe(false);
+    expect(
+      isEqualBigUint64Array(new BigUint64Array([1n, 2n, 3n]), new BigUint64Array([1n, 2n, 3n])),
+    ).toBe(true);
+    expect(
+      isEqualBigUint64Array(new BigUint64Array([1n, 2n, 3n]), new BigUint64Array([1n, 2n, 4n])),
+    ).toBe(false);
   });
 });

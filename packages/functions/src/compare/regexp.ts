@@ -1,3 +1,5 @@
+import { _isEqualRegExp } from "./_internal";
+
 /**
  * Checks whether two values are equal `RegExp` instances.
  *
@@ -9,12 +11,6 @@
  * @returns `true` when both are `RegExp` instances with equal source, flags, and `lastIndex`.
  * @public
  */
-export function _isEqualRegExp(left: RegExp, right: RegExp): boolean {
-  return (
-    left.source === right.source && left.flags === right.flags && left.lastIndex === right.lastIndex
-  );
-}
-
 export function isEqualRegExp(left: RegExp, right: RegExp): boolean {
   return left instanceof RegExp && right instanceof RegExp && _isEqualRegExp(left, right);
 }

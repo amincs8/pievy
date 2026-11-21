@@ -1,4 +1,4 @@
-import { _isEqualTypedArray } from "./typed-array";
+import { isEqualUint8Array } from "./typed-array";
 
 /**
  * Checks whether two values are equal `ArrayBuffer` instances.
@@ -15,7 +15,7 @@ export function isEqualArrayBuffer(left: ArrayBuffer, right: ArrayBuffer): boole
   return (
     left instanceof ArrayBuffer &&
     right instanceof ArrayBuffer &&
-    _isEqualTypedArray(new Uint8Array(left), new Uint8Array(right))
+    isEqualUint8Array(new Uint8Array(left), new Uint8Array(right))
   );
 }
 
@@ -37,6 +37,6 @@ export function isEqualSharedArrayBuffer(
   return (
     left instanceof SharedArrayBuffer &&
     right instanceof SharedArrayBuffer &&
-    _isEqualTypedArray(new Uint8Array(left), new Uint8Array(right))
+    isEqualUint8Array(new Uint8Array(left), new Uint8Array(right))
   );
 }
