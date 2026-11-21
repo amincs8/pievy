@@ -9,7 +9,7 @@
  * @returns `true` when both are `Date` instances with equal timestamps.
  * @public
  */
-function _isEqualDate(left: Date, right: Date): boolean {
+export function _isEqualDate(left: Date, right: Date): boolean {
   return left.getTime() === right.getTime();
 }
 
