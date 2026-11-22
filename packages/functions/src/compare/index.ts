@@ -6,3 +6,4 @@ export * from "./regexp";
 export * from "./typed-array";
 export * from "./is-equal-by";
 export * from "./is-equal-with";
+export * from "./is-match";
