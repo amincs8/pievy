@@ -45,3 +45,15 @@ export function _isEqualTypedArray<T extends { length: number; [index: number]: 
   }
   return true;
 }
+
+/**
+ * Compares two `ArrayBuffer` or `SharedArrayBuffer` instances byte-by-byte.
+ *
+ * @param left - The first buffer.
+ * @param right - The second buffer.
+ * @returns `true` when both have the same byte length and contents.
+ * @internal
+ */
+export function _isEqualBuffer<T extends ArrayBuffer | SharedArrayBuffer>(left: T, right: T) {
+  return _isEqualTypedArray(new Uint8Array(left), new Uint8Array(right));
+}

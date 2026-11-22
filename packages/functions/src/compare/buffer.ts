@@ -1,4 +1,4 @@
-import { isEqualUint8Array } from "./typed-array";
+import { _isEqualBuffer } from "./_internal";
 
 /**
  * Checks whether two values are equal `ArrayBuffer` instances.
@@ -12,11 +12,7 @@ import { isEqualUint8Array } from "./typed-array";
  * @public
  */
 export function isEqualArrayBuffer(left: ArrayBuffer, right: ArrayBuffer): boolean {
-  return (
-    left instanceof ArrayBuffer &&
-    right instanceof ArrayBuffer &&
-    isEqualUint8Array(new Uint8Array(left), new Uint8Array(right))
-  );
+  return left instanceof ArrayBuffer && right instanceof ArrayBuffer && _isEqualBuffer(left, right);
 }
 
 /**
@@ -37,6 +33,6 @@ export function isEqualSharedArrayBuffer(
   return (
     left instanceof SharedArrayBuffer &&
     right instanceof SharedArrayBuffer &&
-    isEqualUint8Array(new Uint8Array(left), new Uint8Array(right))
+    _isEqualBuffer(left, right)
   );
 }
