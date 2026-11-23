@@ -232,6 +232,9 @@ importers:
 
   packages/async:
     dependencies:
+      '@pievy/collections':
+        specifier: workspace:*
+        version: link:../collections
       '@pievy/types':
         specifier: workspace:*
         version: link:../types
