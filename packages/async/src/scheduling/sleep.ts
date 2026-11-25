@@ -1,8 +1,9 @@
 import { isPositive } from "@pievy/types";
+
 import { scheduleTimeout } from "./schedule-timeout";
 
 interface SleepOptions {
-  signal?: AbortSignal;
+  signal?: AbortSignal | undefined;
 }
 
 /**

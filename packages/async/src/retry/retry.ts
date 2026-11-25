@@ -78,7 +78,7 @@ export async function retry<T>(
         strategy,
       });
 
-      await sleep(waitTime, { signal: signal as AbortSignal });
+      await sleep(waitTime, { signal });
     }
   }
 
