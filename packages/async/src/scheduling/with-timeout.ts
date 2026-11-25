@@ -1,6 +1,4 @@
-import { isPositive } from "@pievy/types";
-
-import { scheduleTimeout } from "./schedule-timeout";
+import { anySignal, timeoutSignal } from "../cancellation";
 
 export interface WithTimeoutOptions {
   timeout: number;
@@ -22,64 +20,76 @@ export interface WithTimeoutOptions {
  *   or external abort.
  * @public
  */
-export function withTimeout<T>(
+
+function _createTimeoutError(message?: string): Error {
+  const error = new Error(message ?? "The operation timed out");
+  error.name = "TimeoutError";
+
+  return error;
+}
+
+export async function withTimeout<T>(
   callback: (signal: AbortSignal) => T | PromiseLike<T>,
   options: WithTimeoutOptions,
-): Promise<T> {
-  const { timeout, message = "Operation timed out", signal } = options;
+): Promise<Awaited<T>> {
+  const { timeout, message, signal: parentSignal } = options;
 
-  if (!isPositive(timeout)) {
-    return Promise.reject(new TypeError("'timeout' must be a positive finite number"));
-  }
+  const lifecycle = new AbortController();
 
-  if (signal?.aborted) {
-    return Promise.reject(signal.reason);
-  }
+  const timeoutAbortSignal = timeoutSignal(timeout, {
+    reason: _createTimeoutError(message),
+    signal: lifecycle.signal,
+  });
 
-  const controller = new AbortController();
-  let stop: ReturnType<typeof scheduleTimeout> | undefined;
-  let settled = false;
+  const operationSignal = parentSignal
+    ? anySignal([timeoutAbortSignal, parentSignal])
+    : timeoutAbortSignal;
 
-  return new Promise<T>((resolve, reject) => {
-    const settle = (fn: () => void) => {
-      if (settled) return;
+  try {
+    if (operationSignal.aborted) {
+      throw operationSignal.reason;
+    }
 
-      settled = true;
-      // oxlint-disable-next-line no-use-before-define
-      cleanup();
-      fn();
-    };
+    return await new Promise<Awaited<T>>((resolve, reject) => {
+      let settled = false;
 
-    const onAbort = () => {
-      const reason = signal?.reason;
+      const cleanup = () => {
+        // oxlint-disable-next-line no-use-before-define
+        operationSignal.removeEventListener("abort", onAbort);
+      };
 
-      controller.abort(reason);
-      settle(() => reject(reason));
-    };
-
-    const cleanup = () => {
-      stop?.();
-      signal?.removeEventListener("abort", onAbort);
-    };
-
-    signal?.addEventListener("abort", onAbort, { once: true });
-
-    stop = scheduleTimeout(() => {
-      const error = new Error(message);
-
-      controller.abort(error);
-      settle(() => reject(error));
-    }, timeout);
-
-    Promise.resolve()
-      .then(() => {
+      const settle = (cb: () => void) => {
         if (settled) return;
 
-        return callback(controller.signal);
-      })
-      .then(
-        (value) => settle(() => resolve(value as T)),
-        (error: unknown) => settle(() => reject(error)),
-      );
-  });
+        settled = true;
+        cleanup();
+        cb();
+      };
+
+      const onAbort = () => {
+        settle(() => reject(operationSignal.reason));
+      };
+
+      operationSignal.addEventListener("abort", onAbort, {
+        once: true,
+      });
+
+      if (operationSignal.aborted) {
+        onAbort();
+        return;
+      }
+
+      try {
+        Promise.resolve(callback(operationSignal)).then(
+          (value) => settle(() => resolve(value)),
+          (error) => settle(() => reject(error)),
+        );
+      } catch (error) {
+        settle(() => reject(error));
+      }
+    });
+  } finally {
+    // Clears the timeout timer when the operation settles.
+    lifecycle.abort();
+  }
 }

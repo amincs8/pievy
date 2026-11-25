@@ -23,7 +23,7 @@ describe("@pievy/async: withTimeout", () => {
 
   it("should reject when timeout elapses before callback settles", async () => {
     await expect(withTimeout(() => new Promise(() => {}), { timeout: 20 })).rejects.toThrow(
-      "Operation timed out",
+      "The operation timed out",
     );
   });
 
@@ -68,7 +68,7 @@ describe("@pievy/async: withTimeout", () => {
       { timeout: 20 },
     );
 
-    await expect(promise).rejects.toThrow("Operation timed out");
+    await expect(promise).rejects.toThrow("The operation timed out");
     await new Promise((resolve) => setTimeout(resolve, 150));
     expect(resolved).toBe(false);
   });
