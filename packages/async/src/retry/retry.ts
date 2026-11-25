@@ -1,6 +1,6 @@
 import { isPositive } from "@pievy/types";
 
-import { sleep } from "./sleep";
+import { sleep } from "../scheduling";
 
 export interface RetryOptions {
   /** Maximum total number of executions. Defaults to 3. */
