@@ -27,8 +27,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@pievy/types": "workspace:*",
-    "@pievy/collections": "workspace:*"
+    "@pievy/collections": "workspace:*",
+    "@pievy/types": "workspace:*"
   },
   "devDependencies": {
     "unplugin-dts": "^1.1.2",
@@ -38,9 +38,9 @@
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "12.16.1",
+      "version": "12.23.0",
       "onFail": "download"
     }
   },
-  "packageManager": "pnpm@12.16.1"
+  "packageManager": "pnpm@12.23.0"
 }

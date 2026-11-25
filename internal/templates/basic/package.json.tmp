@@ -23,11 +23,11 @@
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "12.16.1",
+      "version": "12.23.0",
       "onFail": "download"
     }
   },
-  "packageManager": "pnpm@12.16.1",
+  "packageManager": "pnpm@12.23.0",
   "devDependencies": {
     "unplugin-dts": "^1.1.2",
     "vite": "^8.3.5",
