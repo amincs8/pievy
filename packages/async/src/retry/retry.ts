@@ -1,124 +1,142 @@
-import { isPositive } from "@pievy/types";
-
 import { sleep } from "../scheduling";
+import { backoff, type BackoffOptions } from "./backoff";
 
-export interface RetryOptions {
-  /** Maximum total number of executions. Defaults to 3. */
+export interface RetryOptions extends BackoffOptions {
   attempts?: number;
-
-  /** Initial delay between attempts in milliseconds. Defaults to 0. */
-  delay?: number;
-
-  /** Delay multiplier for exponential backoff. Defaults to 2. */
-  factor?: number;
-
-  /** Maximum delay between attempts. Defaults to Infinity. */
-  maxDelay?: number;
-
-  /** Determines whether another attempt should be made. */
-  shouldRetry?: (error: unknown, attempt: number) => boolean;
-
-  /** Cancels the retry process and the current callback if supported. */
   signal?: AbortSignal;
+  shouldRetry?: (error: unknown, attempt: number) => boolean;
 }
 
-/**
- * Retries `callback` up to `attempts` times until it succeeds or `shouldRetry`
- * returns `false`.
- *
- * On each failed attempt, waits for `delay * factor ** (attempt - 1)` ms
- * (capped at `maxDelay`) before retrying. When `signal` is aborted, throws
- * `signal.reason`. Resolves with the first successful result.
- *
- * @param callback - Function invoked with the attempt number; may return a value or promise.
- * @param options - Retry options (`attempts`, `delay`, `factor`, `maxDelay`, `shouldRetry`, `signal`).
- * @returns A promise that resolves with the callback's result or rejects with the last error.
- * @public
- */
-function raceWithSignal<T>(promise: T | PromiseLike<T>, signal?: AbortSignal): Promise<Awaited<T>> {
+export type RetryCallback<T> = (attempt: number, signal?: AbortSignal) => T | PromiseLike<T>;
+
+function getAbortReason(signal: AbortSignal): unknown {
+  return signal.reason ?? new Error("Operation aborted");
+}
+
+function raceWithSignal<T>(promise: PromiseLike<T>, signal?: AbortSignal): Promise<T> {
   if (!signal) {
     return Promise.resolve(promise);
   }
 
   if (signal.aborted) {
-    return Promise.reject(signal.reason);
+    return Promise.reject(getAbortReason(signal));
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise<T>((resolve, reject) => {
+    let settled = false;
+
     const cleanup = () => {
       // oxlint-disable-next-line no-use-before-define
       signal.removeEventListener("abort", onAbort);
     };
 
     const onAbort = () => {
+      if (settled) return;
+
+      settled = true;
       cleanup();
-      reject(signal.reason);
+      reject(getAbortReason(signal));
     };
 
     signal.addEventListener("abort", onAbort, { once: true });
 
     Promise.resolve(promise).then(
       (value) => {
+        if (settled) return;
+
+        settled = true;
         cleanup();
-        resolve(value as Awaited<T>);
+        resolve(value);
       },
-      (error: unknown) => {
+      (error) => {
+        if (settled) return;
+
+        settled = true;
         cleanup();
         reject(error);
       },
     );
+
+    // Handle an abort that happened while the listener was being attached.
+    if (signal.aborted) {
+      onAbort();
+    }
   });
 }
 
+/**
+ * Retries an async operation with configurable backoff.
+ *
+ * Invokes `callback` up to `attempts` times, waiting between attempts using the
+ * configured backoff strategy. Resolves with the first successful result or
+ * rejects with the last error. Aborts early when `signal` is aborted.
+ *
+ * @param callback - Function invoked with the attempt number (and optional signal).
+ * @param options - Retry options (attempts, delay, factor, maxDelay, strategy, jitter, shouldRetry, signal).
+ * @returns A promise resolving to the callback's result.
+ * @public
+ */
 export async function retry<T>(
-  callback: (attempt: number, signal?: AbortSignal) => T | PromiseLike<T>,
+  callback: RetryCallback<T>,
   options: RetryOptions = {},
 ): Promise<Awaited<T>> {
-  const { attempts = 3, delay = 0, factor = 2, maxDelay = Infinity, shouldRetry, signal } = options;
+  const {
+    attempts = 3,
+    delay = 1000,
+    factor = 2,
+    maxDelay = Infinity,
+    strategy = "exponential",
+    jitter = false,
+    signal,
+    shouldRetry,
+  } = options;
 
   if (!Number.isInteger(attempts) || attempts < 1) {
     throw new TypeError("'attempts' must be a positive integer");
   }
 
-  if (!isPositive(delay)) {
-    throw new TypeError("'delay' must be a positive finite number");
-  }
-
-  if (!Number.isFinite(factor) || factor < 1) {
-    throw new TypeError("'factor' must be a finite number greater than or equal to 1");
-  }
-
-  if (maxDelay !== Infinity && !isPositive(maxDelay)) {
-    throw new TypeError("'maxDelay' must be a positive finite number or infinite number");
-  }
+  // Validate backoff configuration before executing the callback.
+  backoff(1, {
+    delay,
+    factor,
+    jitter: false,
+    maxDelay,
+    strategy,
+  });
 
   for (let attempt = 1; attempt <= attempts; attempt++) {
     if (signal?.aborted) {
-      throw signal.reason;
+      throw getAbortReason(signal);
     }
 
     try {
-      return await raceWithSignal(
-        Promise.resolve().then(() => callback(attempt, signal)),
-        signal,
-      );
+      const result = callback(attempt, signal);
+
+      return (await raceWithSignal(result as PromiseLike<T>, signal)) as Awaited<T>;
     } catch (error) {
-      // Do not retry when the operation was aborted.
       if (signal?.aborted) {
-        throw signal.reason;
+        throw getAbortReason(signal);
       }
 
-      if (attempt === attempts || (shouldRetry && !shouldRetry(error, attempt))) {
+      if (attempt === attempts) {
         throw error;
       }
 
-      const waitTime = Math.min(delay * factor ** (attempt - 1), maxDelay);
-
-      if (waitTime > 0) {
-        await sleep(waitTime, { signal: signal as AbortSignal });
+      if (shouldRetry && !shouldRetry(error, attempt)) {
+        throw error;
       }
+
+      const waitTime = backoff(attempt, {
+        delay,
+        factor,
+        jitter,
+        maxDelay,
+        strategy,
+      });
+
+      await sleep(waitTime, { signal: signal as AbortSignal });
     }
   }
 
-  throw new Error("Retry failed unexpectedly");
+  throw new Error("Retry execution failed unexpectedly");
 }

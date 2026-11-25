@@ -136,4 +136,91 @@ describe("@pievy/async: retry", () => {
 
     expect(result).toBe(1);
   });
+
+  it("should pass attempt number to shouldRetry", async () => {
+    const attempts: number[] = [];
+    await expect(
+      retry(
+        () => {
+          throw new Error("fail");
+        },
+        {
+          attempts: 3,
+          shouldRetry: (_err, attempt) => {
+            attempts.push(attempt);
+            return attempt < 2;
+          },
+        },
+      ),
+    ).rejects.toThrow("fail");
+    expect(attempts).toEqual([1, 2]);
+  });
+
+  it("should support linear strategy", async () => {
+    let calls = 0;
+    const start = Date.now();
+    try {
+      await retry(
+        () => {
+          calls++;
+          throw new Error("fail");
+        },
+        { attempts: 3, delay: 20, strategy: "linear" },
+      );
+    } catch {
+      // ignored
+    }
+    const elapsed = Date.now() - start;
+    expect(calls).toBe(3);
+    expect(elapsed).toBeGreaterThanOrEqual(20 + 40);
+  });
+
+  it("should support fixed strategy", async () => {
+    let calls = 0;
+    try {
+      await retry(
+        () => {
+          calls++;
+          throw new Error("fail");
+        },
+        { attempts: 3, delay: 10, strategy: "fixed" },
+      );
+    } catch {
+      // ignored
+    }
+    expect(calls).toBe(3);
+  });
+
+  it("should throw on aborted signal before first attempt", async () => {
+    const controller = new AbortController();
+    controller.abort(new Error("pre-aborted"));
+
+    await expect(retry(() => 1, { signal: controller.signal })).rejects.toBe(
+      new Error("pre-aborted"),
+    );
+  });
+
+  it("should pass signal to callback", async () => {
+    const controller = new AbortController();
+    const result = await retry((_attempt, signal) => {
+      expect(signal).toBe(controller.signal);
+      return "ok";
+    }, { signal: controller.signal });
+
+    expect(result).toBe("ok");
+  });
+
+  it("should reject with signal reason during delay", async () => {
+    const controller = new AbortController();
+    const promise = retry(
+      () => {
+        throw new Error("fail");
+      },
+      { attempts: 5, delay: 1000, signal: controller.signal },
+    );
+
+    setTimeout(() => controller.abort(new Error("aborted-during-delay")), 20);
+
+    await expect(promise).rejects.toBe(new Error("aborted-during-delay"));
+  });
 });
