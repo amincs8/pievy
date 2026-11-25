@@ -7,3 +7,4 @@ export * from "./and-then";
 export * from "./or-error";
 export * from "./match";
 export * from "./unwrap";
+export * from "./flatten";
