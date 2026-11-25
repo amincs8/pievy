@@ -1,3 +1,4 @@
+import { raceAbort } from "../cancellation";
 import { sleep } from "../scheduling";
 import { backoff, type BackoffOptions } from "./backoff";
 
@@ -8,61 +9,6 @@ export interface RetryOptions extends BackoffOptions {
 }
 
 export type RetryCallback<T> = (attempt: number, signal?: AbortSignal) => T | PromiseLike<T>;
-
-function getAbortReason(signal: AbortSignal): unknown {
-  return signal.reason ?? new Error("Operation aborted");
-}
-
-function raceWithSignal<T>(promise: PromiseLike<T>, signal?: AbortSignal): Promise<T> {
-  if (!signal) {
-    return Promise.resolve(promise);
-  }
-
-  if (signal.aborted) {
-    return Promise.reject(getAbortReason(signal));
-  }
-
-  return new Promise<T>((resolve, reject) => {
-    let settled = false;
-
-    const cleanup = () => {
-      // oxlint-disable-next-line no-use-before-define
-      signal.removeEventListener("abort", onAbort);
-    };
-
-    const onAbort = () => {
-      if (settled) return;
-
-      settled = true;
-      cleanup();
-      reject(getAbortReason(signal));
-    };
-
-    signal.addEventListener("abort", onAbort, { once: true });
-
-    Promise.resolve(promise).then(
-      (value) => {
-        if (settled) return;
-
-        settled = true;
-        cleanup();
-        resolve(value);
-      },
-      (error) => {
-        if (settled) return;
-
-        settled = true;
-        cleanup();
-        reject(error);
-      },
-    );
-
-    // Handle an abort that happened while the listener was being attached.
-    if (signal.aborted) {
-      onAbort();
-    }
-  });
-}
 
 /**
  * Retries an async operation with configurable backoff.
@@ -82,7 +28,7 @@ export async function retry<T>(
 ): Promise<Awaited<T>> {
   const {
     attempts = 3,
-    delay = 1000,
+    delay = 0,
     factor = 2,
     maxDelay = Infinity,
     strategy = "exponential",
@@ -95,7 +41,7 @@ export async function retry<T>(
     throw new TypeError("'attempts' must be a positive integer");
   }
 
-  // Validate backoff configuration before executing the callback.
+  // Validate backoff options before executing the callback.
   backoff(1, {
     delay,
     factor,
@@ -106,19 +52,17 @@ export async function retry<T>(
 
   for (let attempt = 1; attempt <= attempts; attempt++) {
     if (signal?.aborted) {
-      throw getAbortReason(signal);
+      throw signal.reason;
     }
 
     try {
-      const result = callback(attempt, signal);
-
-      return (await raceWithSignal(result as PromiseLike<T>, signal)) as Awaited<T>;
+      return await raceAbort(Promise.resolve(callback(attempt, signal)), signal);
     } catch (error) {
       if (signal?.aborted) {
-        throw getAbortReason(signal);
+        throw signal.reason;
       }
 
-      if (attempt === attempts) {
+      if (attempt >= attempts) {
         throw error;
       }
 
