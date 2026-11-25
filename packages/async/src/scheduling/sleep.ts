@@ -1,4 +1,4 @@
-import { _setTimeout } from "./_internal";
+import { scheduleTimeout } from "./schedule-timeout";
 
 interface SleepOptions {
   signal?: AbortSignal;
@@ -34,7 +34,7 @@ export async function sleep(delay: number, options: SleepOptions = {}): Promise<
       reject(signal?.reason);
     };
 
-    const stop = _setTimeout(() => {
+    const stop = scheduleTimeout(() => {
       // oxlint-disable-next-line no-use-before-define
       cleanup();
       resolve();

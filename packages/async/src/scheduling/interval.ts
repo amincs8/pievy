@@ -1,6 +1,6 @@
 import { isBoolean, isPositive, type AnyFunction } from "@pievy/types";
 
-import { _setTimeout } from "./_internal";
+import { scheduleTimeout } from "./schedule-timeout";
 
 export interface IntervalOptions<Fn extends AnyFunction> {
   timeout: number;
@@ -85,7 +85,7 @@ export function interval<Fn extends AnyFunction>(
     remainingTime = delay;
 
     // oxlint-disable-next-line no-use-before-define
-    timer = _setTimeout(run, delay);
+    timer = scheduleTimeout(run, delay);
   };
 
   const pause = () => {

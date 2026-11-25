@@ -1,6 +1,16 @@
 import type { AnyFunction } from "@pievy/types";
 
-export function _setTimeout<Fn extends AnyFunction>(
+/**
+ * Schedules `callback` to run after `delay` ms, preferring
+ * `requestAnimationFrame` when available and falling back to `setTimeout`.
+ *
+ * @param callback - Function to invoke after the delay.
+ * @param delay - Delay in milliseconds. Defaults to `0`.
+ * @param args - Arguments forwarded to `callback`.
+ * @returns A cancel function that prevents the scheduled invocation.
+ * @public
+ */
+export function scheduleTimeout<Fn extends AnyFunction>(
   callback: Fn,
   delay = 0,
   ...args: Parameters<Fn>

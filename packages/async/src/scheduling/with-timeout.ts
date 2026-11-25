@@ -1,4 +1,4 @@
-import { _setTimeout } from "./_internal";
+import { scheduleTimeout } from "./schedule-timeout";
 
 export interface WithTimeoutOptions {
   timeout: number;
@@ -35,7 +35,7 @@ export function withTimeout<T>(
   }
 
   const controller = new AbortController();
-  let stop: ReturnType<typeof _setTimeout> | undefined;
+  let stop: ReturnType<typeof scheduleTimeout> | undefined;
   let settled = false;
 
   return new Promise<T>((resolve, reject) => {
@@ -62,7 +62,7 @@ export function withTimeout<T>(
 
     signal?.addEventListener("abort", onAbort, { once: true });
 
-    stop = _setTimeout(() => {
+    stop = scheduleTimeout(() => {
       const error = new Error(message);
 
       controller.abort(error);
