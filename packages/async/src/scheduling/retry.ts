@@ -1,3 +1,5 @@
+import { isPositive } from "@pievy/types";
+
 import { sleep } from "./sleep";
 
 export interface RetryOptions {
@@ -78,16 +80,16 @@ export async function retry<T>(
     throw new TypeError("'attempts' must be a positive integer");
   }
 
-  if (!Number.isFinite(delay) || delay < 0) {
-    throw new TypeError("'delay' must be a non-negative finite number");
+  if (!isPositive(delay)) {
+    throw new TypeError("'delay' must be a positive finite number");
   }
 
   if (!Number.isFinite(factor) || factor < 1) {
     throw new TypeError("'factor' must be a finite number greater than or equal to 1");
   }
 
-  if (maxDelay !== Infinity && (!Number.isFinite(maxDelay) || maxDelay < 0)) {
-    throw new TypeError("'maxDelay' must be a non-negative finite number");
+  if (maxDelay !== Infinity && !isPositive(maxDelay)) {
+    throw new TypeError("'maxDelay' must be a positive finite number or infinite number");
   }
 
   for (let attempt = 1; attempt <= attempts; attempt++) {

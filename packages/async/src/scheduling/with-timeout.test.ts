@@ -94,4 +94,11 @@ describe("@pievy/async: withTimeout", () => {
       ),
     ).rejects.toThrow("async boom");
   });
+
+  it("should reject when delay is not positive finite number", async () => {
+    await expect(sleep(0)).rejects.toBeInstanceOf(TypeError);
+    await expect(sleep(-1)).rejects.toBeInstanceOf(TypeError);
+    await expect(sleep(NaN)).rejects.toBeInstanceOf(TypeError);
+    await expect(sleep("" as unknown as number)).rejects.toBeInstanceOf(TypeError);
+  });
 });

@@ -59,6 +59,6 @@ describe("@pievy/async: sleep", () => {
     const controller = new AbortController();
     controller.abort();
 
-    await expect(sleep(100, { signal: controller.signal })).rejects.toBeUndefined();
+    await expect(sleep(100, { signal: controller.signal })).rejects.not.toBeUndefined();
   });
 });

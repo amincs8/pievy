@@ -1,3 +1,5 @@
+import { isPositive } from "@pievy/types";
+
 import { scheduleTimeout } from "./schedule-timeout";
 
 export interface WithTimeoutOptions {
@@ -26,8 +28,8 @@ export function withTimeout<T>(
 ): Promise<T> {
   const { timeout, message = "Operation timed out", signal } = options;
 
-  if (!Number.isFinite(timeout) || timeout < 0) {
-    return Promise.reject(new TypeError("'timeout' must be a non-negative finite number"));
+  if (!isPositive(timeout)) {
+    return Promise.reject(new TypeError("'timeout' must be a positive finite number"));
   }
 
   if (signal?.aborted) {

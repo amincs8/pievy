@@ -1,3 +1,4 @@
+import { isPositive } from "@pievy/types";
 import { scheduleTimeout } from "./schedule-timeout";
 
 interface SleepOptions {
@@ -17,8 +18,8 @@ interface SleepOptions {
  * @public
  */
 export async function sleep(delay: number, options: SleepOptions = {}): Promise<void> {
-  if (!Number.isFinite(delay) || delay < 0) {
-    return Promise.reject(new TypeError("'delay' must be a non-negative finite number"));
+  if (!isPositive(delay)) {
+    return Promise.reject(new TypeError("'delay' must be a positive finite number"));
   }
 
   const { signal } = options;
