@@ -4,3 +4,4 @@ export * from "./condition";
 export * from "./composition";
 export * from "./transformation";
 export * from "./compare";
+export * from "./control";
