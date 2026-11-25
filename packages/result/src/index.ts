@@ -6,3 +6,4 @@ export * from "./map-error";
 export * from "./and-then";
 export * from "./or-error";
 export * from "./match";
+export * from "./unwrap";

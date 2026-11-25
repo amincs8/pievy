@@ -4,7 +4,7 @@ import { andThen } from "./and-then";
 import { resultError, resultOk } from "./result";
 import type { ResultOk } from "./types";
 
-describe("@pievy/result:, andThen", () => {
+describe("@pievy/result: andThen", () => {
   it("should chain successful results", () => {
     const result = andThen(resultOk(2), (value) => resultOk(value * 2));
 
