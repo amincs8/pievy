@@ -5,7 +5,17 @@ export default {
     "scope-enum": [
       2,
       "always",
-      ["repo", "repo-internal", "types", "collections", "strings", "functions", "async", "result"],
+      [
+        "repo",
+        "repo-internal",
+        "types",
+        "collections",
+        "strings",
+        "functions",
+        "async",
+        "result",
+        "events",
+      ],
     ],
     "subject-empty": [2, "never"],
   },
