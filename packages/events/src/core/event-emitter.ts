@@ -1,11 +1,24 @@
-import { find } from "@pievy/collections";
-
 import type { EventArgs, EventListener, EventMap, Subscription } from "../types";
 
+/**
+ * Options for adding an event listener.
+ */
+interface AddEventListenerOptions {
+  /** Whether the listener should be invoked only once. */
+  once?: boolean;
+  /** Optional `AbortSignal` to automatically unsubscribe. */
+  signal?: AbortSignal;
+}
+
+/**
+ * Internal entry for tracking a listener.
+ */
 interface ListenerEntry {
   listener: EventListener<unknown>;
   once: boolean;
   active: boolean;
+  signal?: AbortSignal | undefined;
+  onAbort: () => void;
 }
 
 /**
@@ -21,10 +34,15 @@ export class EventEmitter<Events extends EventMap> {
    *
    * @param event - The event name.
    * @param listener - Function to call when the event is emitted.
+   * @param options - Optional configuration (once, signal).
    * @returns A {@link Subscription} for managing the listener.
    */
-  on<K extends keyof Events>(event: K, listener: EventListener<Events[K]>): Subscription {
-    return this._addListener(event, listener, false);
+  on<K extends keyof Events>(
+    event: K,
+    listener: EventListener<Events[K]>,
+    options: AddEventListenerOptions = {},
+  ): Subscription {
+    return this._addListener(event, listener, options);
   }
 
   /**
@@ -32,10 +50,15 @@ export class EventEmitter<Events extends EventMap> {
    *
    * @param event - The event name.
    * @param listener - Function to call once when the event is emitted.
+   * @param options - Optional configuration (signal).
    * @returns A {@link Subscription} for managing the listener.
    */
-  once<K extends keyof Events>(event: K, listener: EventListener<Events[K]>): Subscription {
-    return this._addListener(event, listener, true);
+  once<K extends keyof Events>(
+    event: K,
+    listener: EventListener<Events[K]>,
+    options: Omit<AddEventListenerOptions, "once"> = {},
+  ): Subscription {
+    return this._addListener(event, listener, { ...options, once: true });
   }
 
   /**
@@ -51,11 +74,16 @@ export class EventEmitter<Events extends EventMap> {
 
     if (!entries) return;
 
-    // Remove the most recently registered matching listener.
-    const [entry] = find(entries, (item) => item.listener === listener);
+    let target: ListenerEntry | undefined;
 
-    if (entry) {
-      this._removeEntry(event, entry);
+    for (const entry of entries) {
+      if (entry.listener === listener) {
+        target = entry;
+      }
+    }
+
+    if (target) {
+      this._removeEntry(event, target);
     }
   }
 
@@ -73,6 +101,8 @@ export class EventEmitter<Events extends EventMap> {
     const payload = args[0];
 
     for (const entry of entries) {
+      if (!entry.active) continue;
+
       if (entry.once) {
         this._removeEntry(event, entry);
       }
@@ -92,23 +122,19 @@ export class EventEmitter<Events extends EventMap> {
     if (!entries) return;
 
     for (const entry of entries) {
-      entry.active = false;
+      this._removeEntry(event, entry);
     }
-
-    this._listeners.delete(event);
   }
 
   /**
    * Removes all listeners for all events.
    */
   clearAll(): void {
-    for (const entries of this._listeners.values()) {
+    for (const [event, entries] of this._listeners) {
       for (const entry of entries) {
-        entry.active = false;
+        this._removeEntry(event, entry);
       }
     }
-
-    this._listeners.clear();
   }
 
   /**
@@ -121,11 +147,23 @@ export class EventEmitter<Events extends EventMap> {
     return this._listeners.get(event)?.size ?? 0;
   }
 
+  /**
+   * Internal: adds a listener entry and returns a subscription.
+   */
   private _addListener<K extends keyof Events>(
     event: K,
     listener: EventListener<Events[K]>,
-    once: boolean,
+    options: AddEventListenerOptions,
   ): Subscription {
+    const { once = false, signal } = options;
+
+    if (signal?.aborted) {
+      return {
+        closed: true,
+        unsubscribe: () => {},
+      };
+    }
+
     let entries = this._listeners.get(event);
 
     if (!entries) {
@@ -136,26 +174,32 @@ export class EventEmitter<Events extends EventMap> {
     const entry: ListenerEntry = {
       active: true,
       listener: listener as EventListener<unknown>,
+      onAbort: () => this._removeEntry(event, entry),
       once,
+      signal,
     };
 
     entries.add(entry);
+
+    signal?.addEventListener("abort", entry.onAbort, { once: true });
 
     return {
       get closed() {
         return !entry.active;
       },
 
-      unsubscribe: () => {
-        this._removeEntry(event, entry);
-      },
+      unsubscribe: entry.onAbort,
     };
   }
 
+  /**
+   * Internal: removes a listener entry and cleans up if empty.
+   */
   private _removeEntry(event: keyof Events, entry: ListenerEntry): void {
     if (!entry.active) return;
 
     entry.active = false;
+    entry.signal?.removeEventListener("abort", entry.onAbort);
 
     const entries = this._listeners.get(event);
 
@@ -163,7 +207,7 @@ export class EventEmitter<Events extends EventMap> {
 
     entries.delete(entry);
 
-    if (entries.size === 0) {
+    if (entries.size === 0 && this._listeners.get(event) === entries) {
       this._listeners.delete(event);
     }
   }

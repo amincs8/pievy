@@ -190,6 +190,40 @@ describe("@pievy/events: core/EventEmitter", () => {
 
     await emitter.emit("ready");
 
-    expect(second).toHaveBeenCalledOnce();
+    expect(second).not.toHaveBeenCalled();
+  });
+
+  it("should support abort signal in on", async () => {
+    const emitter = new EventEmitter<Events>();
+    const controller = new AbortController();
+    const listener = vi.fn<() => void>();
+
+    emitter.on("ready", listener, { signal: controller.signal });
+    controller.abort();
+    await emitter.emit("ready");
+
+    expect(listener).not.toHaveBeenCalled();
+  });
+
+  it("should support abort signal in once", async () => {
+    const emitter = new EventEmitter<Events>();
+    const controller = new AbortController();
+    const listener = vi.fn<() => void>();
+
+    emitter.once("ready", listener, { signal: controller.signal });
+    controller.abort();
+    await emitter.emit("ready");
+
+    expect(listener).not.toHaveBeenCalled();
+  });
+
+  it("should close subscription when signal aborts", async () => {
+    const emitter = new EventEmitter<Events>();
+    const controller = new AbortController();
+    const subscription = emitter.on("ready", vi.fn<() => void>(), { signal: controller.signal });
+
+    expect(subscription.closed).toBe(false);
+    controller.abort();
+    expect(subscription.closed).toBe(true);
   });
 });
