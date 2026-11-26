@@ -27,6 +27,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@pievy/types": "workspace:*",
+    "@pievy/result": "workspace:*",
     "@pievy/collections": "workspace:*"
   },
   "devDependencies": {

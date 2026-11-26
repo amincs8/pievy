@@ -289,6 +289,12 @@ importers:
       '@pievy/collections':
         specifier: workspace:*
         version: link:../collections
+      '@pievy/result':
+        specifier: workspace:*
+        version: link:../result
+      '@pievy/types':
+        specifier: workspace:*
+        version: link:../types
     devDependencies:
       unplugin-dts:
         specifier: ^1.1.2
