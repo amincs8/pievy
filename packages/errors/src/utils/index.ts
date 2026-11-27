@@ -3,3 +3,4 @@ export * from "./to-error";
 export * from "./get-error-message";
 export * from "./serialize-error";
 export * from "./deserialize-error";
+export * from "./is-error-like";
