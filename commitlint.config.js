@@ -15,6 +15,7 @@ export default {
         "async",
         "result",
         "events",
+        "errors",
       ],
     ],
     "subject-empty": [2, "never"],
