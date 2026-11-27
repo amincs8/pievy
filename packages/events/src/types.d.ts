@@ -24,3 +24,12 @@ export interface Subscription {
  * Argument tuple for an event: empty for `void` payload, or `[payload]` otherwise.
  */
 export type EventArgs<T> = [T] extends [void] ? [] : [payload: T];
+
+export type AnyEventArgs<Events extends EventMap> = {
+  [K in keyof Events]: [event: K, ...args: EventArgs<Events[K]>];
+}[keyof Events];
+
+export type AnyEventListener<Events extends EventMap> = (
+  event: keyof Events,
+  payload?: Events[keyof Events],
+) => void;

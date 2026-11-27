@@ -226,4 +226,118 @@ describe("@pievy/events: core/EventEmitter", () => {
     controller.abort();
     expect(subscription.closed).toBe(true);
   });
+
+  it("should call onAny for every event", async () => {
+    const emitter = new EventEmitter<Events>();
+    const anyListener = vi.fn<() => void>();
+
+    emitter.onAny(anyListener);
+    await emitter.emit("ready");
+    await emitter.emit("user:created", { id: "1" });
+
+    expect(anyListener).toHaveBeenCalledTimes(2);
+    expect(anyListener).toHaveBeenNthCalledWith(1, "ready");
+    expect(anyListener).toHaveBeenNthCalledWith(2, "user:created", { id: "1" });
+  });
+
+  it("should call onceAny only once for the first event", async () => {
+    const emitter = new EventEmitter<Events>();
+    const anyListener = vi.fn<() => void>();
+
+    emitter.onceAny(anyListener);
+    await emitter.emit("ready");
+    await emitter.emit("user:created", { id: "1" });
+
+    expect(anyListener).toHaveBeenCalledOnce();
+    expect(anyListener).toHaveBeenCalledWith("ready");
+  });
+
+  it("should remove global listener with offAny", async () => {
+    const emitter = new EventEmitter<Events>();
+    const anyListener = vi.fn<() => void>();
+
+    emitter.onAny(anyListener);
+    emitter.offAny(anyListener);
+    await emitter.emit("ready");
+
+    expect(anyListener).not.toHaveBeenCalled();
+  });
+
+  it("should remove only the most recent matching global listener", async () => {
+    const emitter = new EventEmitter<Events>();
+    const anyListener = vi.fn<() => void>();
+
+    emitter.onAny(anyListener);
+    emitter.onAny(anyListener);
+    emitter.offAny(anyListener);
+    await emitter.emit("ready");
+
+    expect(anyListener).toHaveBeenCalledOnce();
+  });
+
+  it("should return correct anyListenerCount", () => {
+    const emitter = new EventEmitter<Events>();
+    const listener = vi.fn<() => void>();
+    expect(emitter.anyListenerCount()).toBe(0);
+
+    emitter.onAny(listener);
+    emitter.onAny(vi.fn<() => void>());
+    expect(emitter.anyListenerCount()).toBe(2);
+
+    emitter.offAny(vi.fn<() => void>());
+    expect(emitter.anyListenerCount()).toBe(2);
+
+    emitter.offAny(listener);
+    expect(emitter.anyListenerCount()).toBe(1);
+  });
+
+  it("should clear global listeners with clearAll", async () => {
+    const emitter = new EventEmitter<Events>();
+    const anyListener = vi.fn<() => void>();
+
+    emitter.onAny(anyListener);
+    emitter.clearAll();
+    await emitter.emit("ready");
+
+    expect(anyListener).not.toHaveBeenCalled();
+    expect(emitter.anyListenerCount()).toBe(0);
+  });
+
+  it("should execute event-specific listeners before global listeners", async () => {
+    const emitter = new EventEmitter<Events>();
+    const order: string[] = [];
+
+    emitter.onAny((event) => {
+      order.push(`any:${event}`);
+    });
+    emitter.on("ready", () => order.push("specific"));
+
+    await emitter.emit("ready");
+
+    expect(order).toEqual(["specific", "any:ready"]);
+  });
+
+  it("should support abort signal in onAny", async () => {
+    const emitter = new EventEmitter<Events>();
+    const controller = new AbortController();
+    const listener = vi.fn<() => void>();
+
+    emitter.onAny(listener, { signal: controller.signal });
+    controller.abort();
+    await emitter.emit("ready");
+
+    expect(listener).not.toHaveBeenCalled();
+  });
+
+  it("should support abort signal in onceAny", async () => {
+    const emitter = new EventEmitter<Events>();
+    const controller = new AbortController();
+    const listener = vi.fn<() => void>();
+
+    emitter.onceAny(listener, { signal: controller.signal });
+    controller.abort();
+    await emitter.emit("ready");
+
+    expect(listener).not.toHaveBeenCalled();
+  });
 });
