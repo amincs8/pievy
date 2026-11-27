@@ -1,4 +1,5 @@
 import { isSerializedError } from "./_internal";
+import { isErrorLike } from "./is-error-like";
 import type { SerializedError } from "./serialize-error";
 
 /**
@@ -12,11 +13,13 @@ import type { SerializedError } from "./serialize-error";
  */
 export function deserializeError(data: SerializedError): Error {
   const cause =
-    data.cause && isSerializedError(data.cause) ? deserializeError(data.cause) : data.cause;
+    isErrorLike(data.cause) && isSerializedError(data.cause)
+      ? deserializeError(data.cause)
+      : data.cause;
 
   const error = new Error(data.message, { cause });
 
-  error.name = data.name;
+  error.name = data.name as string;
 
   if (data.stack) {
     error.stack = data.stack;

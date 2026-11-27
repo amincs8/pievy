@@ -4,8 +4,9 @@ import { toError } from "./to-error";
 
 describe("@pievy/errors: toError", () => {
   it("returns Error instances unchanged", () => {
-    const err = new Error("original");
-    expect(toError(err)).toBe(err);
+    const err = new TypeError("original");
+    const e = toError(err);
+    expect(e).toBe(err);
   });
 
   it("returns custom Error subclasses unchanged", () => {
@@ -52,5 +53,18 @@ describe("@pievy/errors: toError", () => {
     expect(err).toBeInstanceOf(Error);
     expect(err.message).toBe("An unknown error occurred");
     expect(err.cause).toBe(42);
+  });
+
+  it("should preserve ErrorLike message and original value", () => {
+    const value = {
+      code: "DB_ERROR",
+      message: "Connection failed",
+      name: "DatabaseError",
+    };
+
+    const error = toError<Error>(value);
+
+    expect(error.message).toBe("Connection failed");
+    expect(error.cause).toBe(value);
   });
 });

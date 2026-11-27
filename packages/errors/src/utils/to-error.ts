@@ -1,4 +1,4 @@
-import { isError } from "./is-error";
+import { isError, isErrorLike } from "./";
 
 /**
  * Converts any value to an `Error` instance.
@@ -12,19 +12,18 @@ import { isError } from "./is-error";
  * @returns An `Error` instance.
  */
 export function toError<T>(value: T): T extends Error ? T : Error {
-  if (isError(value)) return value as T extends Error ? T : Error;
-
-  if (typeof value === "string") {
-    return new Error(value) as T extends Error ? T : Error;
+  if (isError(value)) {
+    return value as T extends Error ? T : Error;
   }
 
   const message =
-    typeof value === "object" &&
-    value !== null &&
-    "message" in value &&
-    typeof value.message === "string"
-      ? value.message
-      : "An unknown error occurred";
+    typeof value === "string"
+      ? value
+      : isErrorLike(value)
+        ? value.message
+        : "An unknown error occurred";
 
-  return new Error(message, { cause: value }) as T extends Error ? T : Error;
+  return new Error(message, {
+    cause: value,
+  }) as T extends Error ? T : Error;
 }
